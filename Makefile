@@ -1,12 +1,19 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c17 -O2
 
-UNAME_S := $(shell uname -s)
+# Detect OS
+OS := $(shell uname -s 2>/dev/null || echo Windows)
 
-ifeq ($(UNAME_S), Darwin) # macOS
-	LDFLAGS = -L/usr/local/lib -lraylib -lm -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
-else # Linux/Windows (using mingw for Windows cross-compilation)
-	LDFLAGS = -lraylib -lm -lGL -lX11 -lpthread -ldl
+ifeq ($(OS), Darwin) # macOS
+    LDFLAGS = -L/usr/local/lib -lraylib -lm -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
+    TARGET = $(BINDIR)/main
+else ifeq ($(OS), Linux) # Linux
+    LDFLAGS = -lraylib -lm -lGL -lX11 -lpthread -ldl
+    TARGET = $(BINDIR)/main
+else # Assume Windows (MinGW)
+    CC = x86_64-w64-mingw32-gcc
+    LDFLAGS = -lraylib -lm -lopengl32 -lgdi32 -lwinmm
+    TARGET = $(BINDIR)/main.exe
 endif
 
 SRCDIR = src
@@ -16,7 +23,6 @@ BINDIR = bin
 
 SOURCES = $(wildcard $(SRCDIR)/*.c)
 OBJECTS = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SOURCES))
-TARGET = $(BINDIR)/main
 
 all: $(TARGET)
 
@@ -38,4 +44,7 @@ clean:
 run: all
 	./$(TARGET)
 
-.PHONY: all clean run
+winrun: all
+	$(TARGET)
+
+.PHONY: all clean run winrun
