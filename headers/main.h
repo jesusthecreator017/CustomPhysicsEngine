@@ -3,10 +3,12 @@
 
 // Custom Includes
 #include "raylib.h"
+#include "raymath.h"
 
 // Defines
 #define MAX_PARTICLES 1000
 #define PARTICLE_NUM 50
+#define GRAVITY 90.81f
 
 // Defines
 #define MAIN_WINDOW_WIDTH 1280

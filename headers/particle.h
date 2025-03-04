@@ -1,28 +1,33 @@
 #ifndef PARTICLE_H
 #define PARTICLE_H
 
+// Includes
 #include "main.h"
 
-typedef struct{
-    // Vectors
+// Particle "Class"
+typedef struct particle{
+    // Attributes
     Vector2 position;
     Vector2 velocity;
-    Vector2 acceleration;
-
-    // Color
     Color color;
-
-    // Floats
-    float radius;
     float mass;
-}Particle;
+    float restitution;
+    float radius;
 
-void initializeParticles(Particle* particles, int numParticles);
-void updateParticles(Particle* particles, int numParticles, float dt);
-void renderParticles(Particle* particles, int numParticles);
-void constrainParticles(Particle* particles, int numParticles);
+    // Functions (Simulating Classes)
+    void (*Update)(struct particle* p, float dt);
+    void (*Render)(struct particle* p);
+} Particle;
 
-// Force Computation
-Vector2 computeForce(Particle* p1);
+// "Class" Function Prototypes
+void Update(Particle* p, float dt);
+void Render(Particle* p);
+
+// Initial Constructor
+void InitParticle(Particle* p, Vector2 pos, Color c, float m, float rest, float r);
+
+// General Function Prototypes
+void ConstrainParticle(Particle* p);
+
 
 #endif

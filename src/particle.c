@@ -1,57 +1,40 @@
 #include "particle.h"
 
-void initializeParticles(Particle* particles, int numParticles){
-    for(int i = 0; i < numParticles; i++){
-        // Vectors 
-        particles[i].position = (Vector2){GetRandomValue(0, GetScreenWidth()), GetRandomValue(0, GetScreenHeight())};
-        particles[i].velocity = (Vector2){0, 0};
-        particles[i].acceleration = (Vector2){0, 0};
+// "Class" Function Definition
+void Update(Particle* p, float dt){
+    // Apply the effects of gravity on the velocity of the ball
+    p->velocity.y += GRAVITY * dt;
 
-        // Color
-        particles[i].color = (Color){GetRandomValue(0, 255), GetRandomValue(0, 255), GetRandomValue(0, 255), 255};
-
-        // Floats
-        particles[i].radius = GetRandomValue(1, 20);
-        particles[i].mass = (0.75 * particles[i].radius);
-    }
+    // Apply the rest of the physics
+    p->position.x += p->velocity.x * dt;
+    p->position.y += p->velocity.y * dt;
 }
 
-void updateParticles(Particle* particles, int numParticles, float dt){
-    for(int i = 0; i < numParticles; i++){
-        // Calculate Acceleration
-        Particle* particle = &particles[i];
-        Vector2 force = computeForce(particle);
-        particle->acceleration = (Vector2){force.x / particle->mass, force.y / particle->mass};
-        
-        // Apply Physics
-        particle->position.x += particle->velocity.x * dt;
-        particle->position.y += particle->velocity.y * dt;  
-
-        particle->velocity.x += particle->acceleration.x * dt;
-        particle->velocity.y += particle->acceleration.y * dt;
-    }
-}
-void renderParticles(Particle* particles, int numParticles){
-    for(int i = 0; i < numParticles; i++){
-        Particle* particle = &particles[i];
-       DrawCircle(particle->position.x, particle->position.y, particle->radius, particle->color); 
-    }
-    
+void Render(Particle* p){
+    DrawCircleV(p->position, p->radius, p->color);
 }
 
-void constrainParticles(Particle* particles, int numParticles){
-    for(int i = 0; i < numParticles; i++){
-        Particle* particle = & particles[i];
-        if((particle->position.x - (particle->radius / 2)) < 0 || (particle->position.x + (particle->radius / 2)) > GetScreenWidth()){
-            particle->velocity.x *= -1;
-        }
-        if((particle->position.y - (particle->radius / 2)) < 0 || (particle->position.y + (particle->radius / 2)) > GetScreenHeight()){
-            particle->velocity.y *= -1;
-        }
-    }
+// Constructor Functions
+void InitParticle(Particle* p, Vector2 pos, Color c, float m, float rest, float r){
+    // Attributes
+    p->position = pos;
+    p->velocity = (Vector2){0, 0};
+    p->color = c;
+    p->mass = m;
+    p->restitution = rest;
+    p->radius = r;
+
+    // Functions
+    p->Update = Update;
+    p->Render = Render;
 }
 
-// Forces
-Vector2 computeForce(Particle* p1){
-    return (Vector2){0, p1->mass * 9.81f};
+// General Function Definitions
+void ConstrainParticle(Particle* p){
+    if((p->position.x - p->radius / 2) < 0 || (p->position.x + p->radius / 2) > GetScreenWidth()){
+        p->velocity.x *= -1; // Reverse the velocity to make the ball "Bounce off of the wall"
+    }
+    if((p->position.y - p->radius / 2) < 0 || (p->position.y + p->radius / 2) > GetScreenHeight()){
+        p->velocity.y *= -1; // Reverse the velocity to make the ball "Bounce off of the wall"
+    }
 }
