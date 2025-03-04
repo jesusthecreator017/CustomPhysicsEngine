@@ -28,6 +28,8 @@ void InitParticle(Particle* p, Vector2 pos, Color c, float m, float rest, float 
 
 // General Function Prototypes
 void ConstrainParticle(Particle* p);
+void ResolveCollision(Particle* a, Particle* b);
+bool ParticleVsParticle(Particle* a, Particle* b);
 
 
 #endif

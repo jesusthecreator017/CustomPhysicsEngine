@@ -32,11 +32,25 @@ int main(void){
             current->Update(current, dt);
         }
     
+        // Check Collisions
+        for (int i = 0; i < PARTICLE_NUM; i++) {
+            for (int j = i + 1; j < PARTICLE_NUM; j++) {  // Compare each pair only once
+                Particle* p1 = &particles[i];
+                Particle* p2 = &particles[j];
+
+                if (ParticleVsParticle(p1, p2)) {
+                    ResolveCollision(p1, p2);
+                }
+            }
+        }
+
+
         // Apply Constraints
         for(int i = 0; i < PARTICLE_NUM; i++){
             Particle* current = &particles[i];
             ConstrainParticle(current);
         }
+
 
         // Render Logic Here
         BeginDrawing();
