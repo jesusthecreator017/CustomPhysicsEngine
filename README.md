@@ -1,7 +1,5 @@
 # CustomPhysicsEngine
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Build Status](https://img.shields.io/travis/jesusthecreator017/CustomPhysicsEngine/main.svg?logo=travis)](https://travis-ci.org/jesusthecreator017/CustomPhysicsEngine)
 [![GitHub Issues](https://img.shields.io/github/issues/jesusthecreator017/CustomPhysicsEngine.svg)](https://github.com/jesusthecreator017/CustomPhysicsEngine/issues)
 [![GitHub Stars](https://img.shields.io/github/stars/jesusthecreator017/CustomPhysicsEngine.svg)](https://github.com/jesusthecreator017/CustomPhysicsEngine/stargazers)
 
@@ -78,9 +76,6 @@ Contributions are welcome! To contribute:
 
 Please ensure your code adheres to the project's coding standards and includes appropriate documentation.
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgements
 
