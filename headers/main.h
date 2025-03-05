@@ -7,7 +7,7 @@
 
 // Defines
 #define MAX_PARTICLES 1000
-#define PARTICLE_NUM 50
+#define PARTICLE_NUM 20
 #define GRAVITY 900.81f
 
 // Defines

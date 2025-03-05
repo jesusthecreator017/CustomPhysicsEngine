@@ -2,7 +2,7 @@
 #define PARTICLE_H
 
 // Includes
-#include "main.h"
+#include "debug.h"
 
 // Particle "Class"
 typedef struct particle{
@@ -13,6 +13,8 @@ typedef struct particle{
     float mass;
     float restitution;
     float radius;
+    ObjectType type;
+    DebugData info;
 
     // Functions (Simulating Classes)
     void (*Update)(struct particle* p, float dt);

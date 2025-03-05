@@ -8,6 +8,10 @@ void Update(Particle* p, float dt){
     // Apply the rest of the physics
     p->position.x += p->velocity.x * dt;
     p->position.y += p->velocity.y * dt;
+
+    // Update all debug information
+    p->info.position = p->position;
+    p->info.velocity = p->velocity;
 }
 
 void Render(Particle* p){
@@ -23,6 +27,8 @@ void InitParticle(Particle* p, Vector2 pos, Color c, float m, float rest, float 
     p->mass = m;
     p->restitution = rest;
     p->radius = r;
+    p->type = TYPE_PARTICLE;
+    p->info = (DebugData){pos, p->velocity, c, r};
 
     // Functions
     p->Update = Update;
@@ -31,11 +37,20 @@ void InitParticle(Particle* p, Vector2 pos, Color c, float m, float rest, float 
 
 // General Function Definitions
 void ConstrainParticle(Particle* p){
-    if((p->position.x - p->radius / 2) < 0 || (p->position.x + p->radius / 2) > GetScreenWidth()){
+    if((p->position.x - p->radius) <= 0){
+        p->position.x = 0 + p->radius;   // Update the X position
+        p->velocity.x *= -1; // Reverse the velocity to make the ball "Bounce off of the wall"
+    } else if ((p->position.x + p->radius) >= GetScreenWidth()){
+        p->position.x = GetScreenWidth() - p->radius;   // Update the X position
         p->velocity.x *= -1; // Reverse the velocity to make the ball "Bounce off of the wall"
     }
-    if((p->position.y - p->radius / 2) < 0 || (p->position.y + p->radius / 2) > GetScreenHeight()){
+
+    if((p->position.y - p->radius) <= 0){
+        p->position.y = 0 + p->radius;   // Update the Y Position
         p->velocity.y *= -1; // Reverse the velocity to make the ball "Bounce off of the wall"
+    } else if ((p->position.y + p->radius) >= GetScreenHeight()){
+        p->position.y = GetScreenHeight() - p->radius;
+        p->velocity.y *= -1;
     }
 }
 

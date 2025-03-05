@@ -1,7 +1,6 @@
 // Import main header file
 #include "particle.h"
 
-
 int main(void){
     // Initialize Window
     InitWindow(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT, "Test Physics Engine");
@@ -16,7 +15,7 @@ int main(void){
             (Color){GetRandomValue(0, 255), GetRandomValue(0, 255), GetRandomValue(0, 255), 255},   // Color
             GetRandomValue(2, 15),                                                                  // Mass
             .5f,                                                                                    // Restitution
-            GetRandomValue(5, 25)                                                                   // Radius
+            GetRandomValue(20, 50)                                                                   // Radius
         );
     }
 
@@ -44,19 +43,19 @@ int main(void){
             }
         }
 
-
         // Apply Constraints
         for(int i = 0; i < PARTICLE_NUM; i++){
             Particle* current = &particles[i];
             ConstrainParticle(current);
         }
 
-
         // Render Logic Here
         BeginDrawing();
             ClearBackground(RAYWHITE);
             DrawFPS(GetScreenWidth() - 100, 10);
-            
+
+            // Debug Rendering
+            ObjectInfo(particles[1].info, particles[1].type);
 
             // Render Objects Here
             for(int i = 0; i < PARTICLE_NUM; i++){
