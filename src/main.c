@@ -1,5 +1,6 @@
 // Import main header file
 #include "particle.h"
+#include "raylib.h"
 
 Particle particles[MAX_PARTICLES];
 
