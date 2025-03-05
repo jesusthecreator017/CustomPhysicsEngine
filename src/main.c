@@ -1,6 +1,7 @@
 // Import main header file
 #include "particle.h"
 #include "raylib.h"
+#include "MouseOperations.h"
 
 int main(void){
     // Initialize Window
@@ -31,6 +32,13 @@ int main(void){
             Particle* current = &particles[i];
             current->Update(current, dt);
         }
+
+        //Checks to see whether the user clicked on the left mouse button. 
+        if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
+        {
+            PickUpParticle(particles); //(Found in MouseOperations.c)
+        }
+    
         
         // Check Collisions
         for (int i = 0; i < PARTICLE_NUM; i++) {
