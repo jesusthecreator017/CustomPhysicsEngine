@@ -15,13 +15,8 @@ int main(void){
             (Vector2){GetRandomValue(10, GetScreenWidth()), GetRandomValue(10, GetScreenHeight())}, // Position
             (Color){GetRandomValue(0, 255), GetRandomValue(0, 255), GetRandomValue(0, 255), 255},   // Color
             GetRandomValue(2, 15),                                                                  // Mass
-<<<<<<< HEAD
-            .5f,                                                                                    // Restitution
-            GetRandomValue(20, 50)                                                                   // Radius
-=======
             .5f,                                                                                    // Restitution (Bounciness)
             GetRandomValue(5, 25)                                                                   // Radius
->>>>>>> 12847940e2d21fe1262d112ca8fa923e8b9d1e40
         );
     }
 
