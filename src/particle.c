@@ -2,10 +2,18 @@
 
 // "Class" Function Definition
 void Update(Particle* p, float dt){
-    // Apply the effects of gravity on the velocity of the ball
-    p->velocity.y += GRAVITY * dt;
+    // Apply gravity
+    Vector2 acceleration = {0, GRAVITY};
 
-    // Apply the rest of the physics
+    // Integrate acceleration into velocity
+    p->velocity.x += acceleration.x * dt;
+    p->velocity.y += acceleration.y * dt;
+
+    // Apply damping (air resistance or friction)
+    p->velocity.x *= DAMPING_FACTOR;
+    p->velocity.y *= DAMPING_FACTOR;
+
+    // Integrate velocity into position (Semi-Implicit Euler Integration)
     p->position.x += p->velocity.x * dt;
     p->position.y += p->velocity.y * dt;
 
@@ -52,6 +60,11 @@ void ConstrainParticle(Particle* p){
         p->position.y = GetScreenHeight() - p->radius;
         p->velocity.y *= -1;
     }
+    else if((p->position.y + p->radius) >= GetScreenHeight())
+    {
+        p->velocity.x = 0;
+        p->velocity.y = 0;
+    }
 }
 
 void ResolveCollision(Particle* a, Particle* b){
@@ -75,12 +88,14 @@ void ResolveCollision(Particle* a, Particle* b){
     a->velocity.y -= impulse.y / a->mass;
     b->velocity.x += impulse.x / b->mass;
     b->velocity.y += impulse.y / b->mass;
-
 }
 
 bool ParticleVsParticle(Particle* a, Particle* b){
-    float deltaX = b->position.x - a->position.x;
-    float deltaY = b->position.y - a->position.y;
-    float distance = sqrtf(deltaX * deltaX + deltaY * deltaY);
-    return distance < (a->radius + b->radius);
+    float r = a->radius + b->radius;
+    r *= r; // Squaring the sum of radii
+
+    // Corrected distance squared formula
+    float distance_squared = powf(b->position.x - a->position.x, 2) + powf(b->position.y - a->position.y, 2);
+
+    return distance_squared < r; // Check if objects overlap
 }

@@ -12,8 +12,9 @@ else ifeq ($(OS), Linux) # Linux
     TARGET = $(BINDIR)/main
 else # Assume Windows (MinGW)
     CC = x86_64-w64-mingw32-gcc
-    LDFLAGS = -lraylib -lm -lopengl32 -lgdi32 -lwinmm
+    LDFLAGS = -L"C:/Users/kinet/raylib/build/raylib" -lraylib -lm -lopengl32 -lgdi32 -lwinmm
     TARGET = $(BINDIR)/main.exe
+    INCLUDES = -I"C:/Users/kinet/raylib/include" # Include Raylib header files
 endif
 
 SRCDIR = src
@@ -30,7 +31,7 @@ $(TARGET): $(OBJECTS) | $(BINDIR)
 	$(CC) $(OBJECTS) -o $(TARGET) $(LDFLAGS)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
-	$(CC) $(CFLAGS) -I$(HEADDIR) -c $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 $(OBJDIR):
 	mkdir -p $(OBJDIR)
@@ -45,6 +46,6 @@ run: all
 	./$(TARGET)
 
 winrun: all
-	$(TARGET)
+	$(BINDIR)/main.exe
 
 .PHONY: all clean run winrun
