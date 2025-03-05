@@ -5,9 +5,8 @@ void Update(Particle* p, float dt){
     // Apply gravity
     Vector2 acceleration = {0, GRAVITY};
 
-    // Integrate acceleration into velocity
-    p->velocity.x += acceleration.x * dt;
-    p->velocity.y += acceleration.y * dt;
+    // Integrate half of the acceleration 
+    p->velocity = Vector2Add(p->velocity, Vector2Scale(acceleration, dt * 0.5f));
 
     // Apply damping (air resistance or friction)
     p->velocity.x *= DAMPING_FACTOR;
@@ -16,6 +15,9 @@ void Update(Particle* p, float dt){
     // Integrate velocity into position (Semi-Implicit Euler Integration)
     p->position.x += p->velocity.x * dt;
     p->position.y += p->velocity.y * dt;
+
+    // Integrate the other half of velocity here
+    p->velocity = Vector2Add(p->velocity, Vector2Scale(acceleration, dt * 0.5f));
 
     // Update all debug information
     p->info.position = p->position;
@@ -59,9 +61,7 @@ void ConstrainParticle(Particle* p){
     } else if ((p->position.y + p->radius) >= GetScreenHeight()){
         p->position.y = GetScreenHeight() - p->radius;
         p->velocity.y *= -1;
-    }
-    else if((p->position.y + p->radius) >= GetScreenHeight())
-    {
+    } else if((p->position.y + p->radius) >= GetScreenHeight()){
         p->velocity.x = 0;
         p->velocity.y = 0;
     }
