@@ -13,6 +13,7 @@ typedef struct particle{
     float mass;
     float restitution;
     float radius;
+    int isGrabbed;
     ObjectType type;
     DebugData info;
 
