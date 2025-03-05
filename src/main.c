@@ -1,6 +1,6 @@
 // Import main header file
 #include "particle.h"
-#include "raylib.h"
+#include "static.h"
 
 int main(void){
     // Initialize Window
@@ -8,6 +8,17 @@ int main(void){
 
     // Array of particles
     Particle particles[MAX_PARTICLES];
+
+    // Static Object
+    StaticObject staticObj;
+    InitStaticObject(
+        &staticObj,
+        (Vector2){GetRandomValue(10, GetScreenWidth()), GetRandomValue(10, GetScreenHeight())},
+        TYPE_PARTICLE,
+        (Color){GetRandomValue(0, 255), GetRandomValue(0, 255), GetRandomValue(0, 255), 255},
+        (Vector2){0},
+        GetRandomValue(10, 50)
+    );
 
     for(int i = 0; i < PARTICLE_NUM; i++){
         InitParticle(
@@ -65,6 +76,8 @@ int main(void){
                 Particle* current = &particles[i];
                 current->Render(current);
             }
+
+            staticObj.Render(&staticObj);
         EndDrawing();
     }
     
