@@ -10,6 +10,8 @@ int main(void){
     // Array of particles
     Particle particles[MAX_PARTICLES];
 
+    int condition = 0;
+
     for(int i = 0; i < PARTICLE_NUM; i++){
         InitParticle(
             &particles[i],                                                                          // Particle Reference
@@ -36,7 +38,7 @@ int main(void){
         //Checks to see whether the user clicked on the left mouse button. 
         if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
         {
-            PickUpParticle(particles); //(Found in MouseOperations.c)
+            PickUpParticle(particles, &condition); //(Found in MouseOperations.c)
         }
     
         
