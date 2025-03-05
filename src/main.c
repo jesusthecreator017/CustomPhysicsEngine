@@ -26,7 +26,6 @@ int main(void){
         // Deltat time is used everywhere
         float dt = GetFrameTime();
 
-        
         // Update
         for(int i = 0; i < PARTICLE_NUM; i++){
             Particle* current = &particles[i];
@@ -38,7 +37,6 @@ int main(void){
         {
             PickUpParticle(particles); //(Found in MouseOperations.c)
         }
-    
         
         // Check Collisions
         for (int i = 0; i < PARTICLE_NUM; i++) {
