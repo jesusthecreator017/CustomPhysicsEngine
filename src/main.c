@@ -54,17 +54,6 @@ int main(void){
         false
     );
 
-    InitParticle(
-        &particles[3],
-        (Vector2){500, 200},
-        BLUE,
-        GetRandomValue(10, 100),
-        0.1f,
-        10.0f,
-        false
-    );
-
-
 
     InitStick(&sticks[0], &particles[0].position, &particles[1].position, 100.0f);
     InitStick(&sticks[1], &particles[1].position, &particles[2].position, 100.0f);
