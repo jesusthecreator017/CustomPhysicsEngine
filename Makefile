@@ -5,7 +5,8 @@ CFLAGS = -Wall -Wextra -std=c17 -O2 -I$(HEADDIR)
 OS := $(shell uname -s | tr '[:upper:]' '[:lower:]')
 
 ifeq ($(OS), darwin) # macOS
-    LDFLAGS = -L/usr/local/lib -lraylib -lm -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo
+    LDFLAGS = -L/usr/local/lib -lraylib -lm -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo \
+              -Wl,-rpath,/usr/local/lib
     TARGET = $(BINDIR)/main
 else ifeq ($(OS), linux) # Linux
     LDFLAGS = -lraylib -lm -lGL -lX11 -lpthread -ldl -I/usr/local/include
