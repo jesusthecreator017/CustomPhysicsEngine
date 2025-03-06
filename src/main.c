@@ -40,7 +40,6 @@ int main(void){
             Particle* current = &particles[i];
             current->Update(current, dt);
         }
-
         
         //Checks to see whether the user clicked on the left mouse button. 
         if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
@@ -68,23 +67,19 @@ int main(void){
             }
         }
         
-        
         // Render Logic Here
         BeginDrawing();
             ClearBackground(RAYWHITE);
             DrawFPS(GetScreenWidth() - 100, 10);
-        
-            DrawLineEx((Vector2){0, 610}, (Vector2){1300, 610}, 20, BLUE);
-
-            // Debug Rendering
-            ObjectInfo(particles[1].info, particles[1].type);
-
+            
             // Render Objects Here
             for(int i = 0; i < PARTICLE_NUM; i++){
                 Particle* current = &particles[i];
                 current->Render(current);
             }
-
+            
+            // Draw Debug info ontop of everything
+            ObjectInfo(particles[1].info, particles[1].type);
         EndDrawing();
     }
     
