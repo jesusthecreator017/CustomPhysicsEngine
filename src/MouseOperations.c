@@ -14,8 +14,6 @@ void PickUpParticle(Particle particles[], int * condition)
         {
                 particles[k].position.x = GetMouseX();                  //Change particle to X value of mouse location.
                 particles[k].position.y = GetMouseY();                  //Change particle to Y value of mouse location.
-                particles[k].velocity.x = 0;                            //Change velocity to 0.
-                particles[k].velocity.y = 0;                            //Change velocity to 0.
         }
         else
         {
@@ -28,8 +26,6 @@ void PickUpParticle(Particle particles[], int * condition)
                 particles[k].isGrabbed = 1;                             //This prevents the cursor from moving onto another ball, when you haven't released the mouse button.
                 particles[k].position.x = GetMouseX();                  //Change particle to X value of mouse location.
                 particles[k].position.y = GetMouseY();                  //Change particle to Y value of mouse location.
-                particles[k].velocity.x = 0;                            //Change velocity to 0.
-                particles[k].velocity.y = 0;                            //Change velocity to 0.
             }
         }
         

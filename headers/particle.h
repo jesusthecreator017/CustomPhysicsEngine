@@ -8,7 +8,7 @@
 typedef struct particle{
     // Attributes
     Vector2 position;
-    Vector2 velocity;
+    Vector2 oldPosition;
     Color color;
     float mass;
     float restitution;
@@ -27,7 +27,7 @@ void Update(Particle* p, float dt);
 void Render(Particle* p);
 
 // Initial Constructor
-void InitParticle(Particle* p, Vector2 pos, Color c, float m, float rest, float r);
+void InitParticle(Particle* p, Vector2 pos, Vector2 oldPos, Color c, float m, float rest, float r);
 
 // General Function Prototypes
 void ConstrainParticle(Particle* p);
