@@ -2,6 +2,9 @@
 
 // "Class" Function Definition
 void Update(Particle* p, float dt){
+    // "Velocity of the particles"
+    Vector2 velocity = Vector2Subtract(p->position, p->oldPosition);
+
     // Store current position before updating it
     Vector2 temp = p->position;
 
@@ -13,6 +16,10 @@ void Update(Particle* p, float dt){
 
     // Update the old position
     p->oldPosition = temp;
+
+    // Updating debug data
+    p->info.position = p->position;
+    p->info.velocity = velocity;
 }
 
 void Render(Particle* p){
@@ -58,6 +65,50 @@ void ConstrainParticle(Particle* p){
         p->oldPosition.y = p->position.y + velocity.y * p->restitution;
     }
 }
+
+void ResolveCollision(Particle* a, Particle* b) {
+    // Compute collision normal
+    Vector2 collisionNormal = Vector2Subtract(b->position, a->position);
+    float distance = Vector2Length(collisionNormal);
+    float radiusSum = a->radius + b->radius;
+
+    // Ensure particles are actually colliding
+    if (distance == 0 || distance >= radiusSum) return;
+
+    // Normalize the collision normal
+    collisionNormal = Vector2Scale(collisionNormal, 1.0f / distance);
+
+    // Compute penetration depth and apply **fractional correction** (50% each)
+    float penetrationDepth = (radiusSum - distance) * 0.5f;
+    a->position = Vector2Subtract(a->position, Vector2Scale(collisionNormal, penetrationDepth));
+    b->position = Vector2Add(b->position, Vector2Scale(collisionNormal, penetrationDepth));
+
+    // Compute relative velocity using Verlet method
+    Vector2 relativeVelocity = Vector2Subtract(
+        Vector2Subtract(b->position, b->oldPosition),
+        Vector2Subtract(a->position, a->oldPosition)
+    );
+
+    // Compute velocity along collision normal
+    float velocityAlongNormal = Vector2DotProduct(relativeVelocity, collisionNormal);
+
+    // If particles are separating, skip response
+    if (velocityAlongNormal > 0) return;
+
+    // Compute **clamped** restitution (must be between 0 and 1)
+    float restitution = fminf(fmaxf(a->restitution, 0.0f), 1.0f);
+
+    // Compute impulse magnitude
+    float impulseMagnitude = -(1.0f + restitution) * velocityAlongNormal;
+    impulseMagnitude /= (1.0f / a->mass) + (1.0f / b->mass);
+
+    // Apply impulse conservatively (reduce factor to 50%)
+    Vector2 impulse = Vector2Scale(collisionNormal, impulseMagnitude * 0.5f);
+
+    a->oldPosition = Vector2Subtract(a->oldPosition, Vector2Scale(impulse, 1.0f / a->mass));
+    b->oldPosition = Vector2Add(b->oldPosition, Vector2Scale(impulse, 1.0f / b->mass));
+}
+
 
 bool ParticleVsParticle(Particle* a, Particle* b){
     float r = a->radius + b->radius;
