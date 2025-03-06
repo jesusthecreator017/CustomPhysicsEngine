@@ -47,6 +47,14 @@ int main(void){
         {
             PickUpParticle(particles, &condition); //(Found in MouseOperations.c)
         }
+        else
+        {
+            condition = 0;
+            for(int a = 0; a < PARTICLE_NUM; a++)
+            {
+                particles[a].isGrabbed = 0;
+            }
+        }
         
         // Check Collisions
         for (int i = 0; i < PARTICLE_NUM; i++) {
