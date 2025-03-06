@@ -7,15 +7,16 @@
 // Particle "Class"
 typedef struct particle{
     // Attributes
+    Color color;
+    ObjectType type;
+    DebugData info;
     Vector2 position;
     Vector2 oldPosition;
-    Color color;
     float mass;
     float restitution;
     float radius;
     int isGrabbed;
-    ObjectType type;
-    DebugData info;
+    bool isPinned;
 
     // Functions (Simulating Classes)
     void (*Update)(struct particle* p, float dt);
@@ -27,7 +28,7 @@ void Update(Particle* p, float dt);
 void Render(Particle* p);
 
 // Initial Constructor
-void InitParticle(Particle* p, Vector2 pos, Color c, float m, float rest, float r);
+void InitParticle(Particle* p, Vector2 pos, Color c, float m, float rest, float r, bool isPinned);
 
 // General Function Prototypes
 void ConstrainParticle(Particle* p);

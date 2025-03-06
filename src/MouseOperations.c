@@ -1,7 +1,7 @@
 #include "particle.h"
 #include "main.h"
 
-void PickUpParticle(Particle particles[], int * condition)
+void PickUpParticle(Particle particles[], int* condition)
 {
     //Loops through the number of particles.
     for(int k = 0; k < PARTICLE_NUM; k++)
@@ -10,7 +10,6 @@ void PickUpParticle(Particle particles[], int * condition)
         {
             particles[k].position.x = GetMouseX();                  //Change particle to X value of mouse location.
             particles[k].position.y = GetMouseY();                  //Change particle to Y value of mouse location.
-                 
         }
         else
         {
@@ -22,7 +21,6 @@ void PickUpParticle(Particle particles[], int * condition)
                 particles[k].isGrabbed = 1;                             //This prevents the cursor from moving onto another ball, when you haven't released the mouse button.
                 particles[k].position.x = GetMouseX();                  //Change particle to X value of mouse location.
                 particles[k].position.y = GetMouseY();                  //Change particle to Y value of mouse location.
-               
             }
         }
     }
