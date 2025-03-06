@@ -1,27 +1,76 @@
 // Import main header file
 #include "particle.h"
-#include "raylib.h"
 #include "MouseOperations.h"
+#include "sticks.h"
 
 int main(void){
     // Initialize Window
     InitWindow(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT, "Test Physics Engine");
 
-    // Array of particles
-    Particle particles[MAX_PARTICLES];
-
     int condition = 0;
 
-    for(int i = 0; i < PARTICLE_NUM; i++){
-        InitParticle(
-            &particles[i],                                                                          // Particle Reference
-            (Vector2){GetRandomValue(10, GetScreenWidth()), GetRandomValue(10, GetScreenHeight())}, // Position
-            (Color){GetRandomValue(0, 255), GetRandomValue(0, 255), GetRandomValue(0, 255), 255},   // Color
-            GetRandomValue(2, 15),                                                                  // Mass
-            0.6f,                                                                                   // Restitution (Bounciness)
-            GetRandomValue(5, 25)                                                                   // Radius
-        );
-    }
+
+    // Array of particles
+    Particle particles[PARTICLE_NUM];
+    Stick sticks[STICK_NUM];
+
+    InitParticle(
+        &particles[0],
+        (Vector2){500, 500},
+        BLUE,
+        GetRandomValue(10, 100),
+        0.1f,
+        10.0f,
+        false
+    );
+
+    InitParticle(
+        &particles[1],
+        (Vector2){600, 500},
+        BLUE,
+        GetRandomValue(10, 100),
+        0.1f,
+        10.0f,
+        false
+    );
+
+    InitParticle(
+        &particles[2],
+        (Vector2){600, 400},
+        BLUE,
+        GetRandomValue(10, 100),
+        0.1f,
+        10.0f,
+        false
+    );
+
+    InitParticle(
+        &particles[3],
+        (Vector2){500, 400},
+        BLUE,
+        GetRandomValue(10, 100),
+        0.1f,
+        10.0f,
+        false
+    );
+
+    InitParticle(
+        &particles[3],
+        (Vector2){500, 200},
+        BLUE,
+        GetRandomValue(10, 100),
+        0.1f,
+        10.0f,
+        false
+    );
+
+
+
+    InitStick(&sticks[0], &particles[0].position, &particles[1].position, 100.0f);
+    InitStick(&sticks[1], &particles[1].position, &particles[2].position, 100.0f);
+    InitStick(&sticks[2], &particles[2].position, &particles[3].position, 100.0f);
+    InitStick(&sticks[3], &particles[3].position, &particles[0].position, 100.0f);
+    InitStick(&sticks[4], &particles[0].position, &particles[2].position, 141.0f);
 
     // Main Game Loop
     while (!WindowShouldClose()){
@@ -41,6 +90,11 @@ int main(void){
             current->Update(current, dt);
         }
         
+
+        for(int i = 0; i < STICK_NUM; i++){
+            sticks[i].Update(&sticks[i]);
+        }
+
         //Checks to see whether the user clicked on the left mouse button. 
         if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
         {
@@ -73,6 +127,10 @@ int main(void){
             DrawFPS(GetScreenWidth() - 100, 10);
             
             // Render Objects Here
+            for(int i = 0; i < STICK_NUM; i++){
+                sticks[i].Render(&sticks[i]);
+            }
+
             for(int i = 0; i < PARTICLE_NUM; i++){
                 Particle* current = &particles[i];
                 current->Render(current);
@@ -83,7 +141,6 @@ int main(void){
         EndDrawing();
     }
     
-
     // FREE EVERYTHING
     CloseWindow();
 

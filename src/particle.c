@@ -2,24 +2,26 @@
 
 // "Class" Function Definition
 void Update(Particle* p, float dt){
-    // "Velocity of the particles"
-    Vector2 velocity = Vector2Subtract(p->position, p->oldPosition);
+    if(!p->isPinned){
+        // "Velocity of the particles"
+        Vector2 velocity = Vector2Subtract(p->position, p->oldPosition);
 
-    // Store current position before updating it
-    Vector2 temp = p->position;
+        // Store current position before updating it
+        Vector2 temp = p->position;
 
-    // Calculate the acceleration
-    Vector2 acceleration = {0, GRAVITY};
+        // Calculate the acceleration
+        Vector2 acceleration = {0, GRAVITY};
 
-    // Verlet Integration
-    p->position = Vector2Add(Vector2Subtract(Vector2Scale(p->position, 2), p->oldPosition), Vector2Scale(acceleration, dt*dt));
+        // Verlet Integration
+        p->position = Vector2Add(Vector2Subtract(Vector2Scale(p->position, 2), p->oldPosition), Vector2Scale(acceleration, dt*dt));
 
-    // Update the old position
-    p->oldPosition = temp;
+        // Update the old position
+        p->oldPosition = temp;
 
-    // Updating debug data
-    p->info.position = p->position;
-    p->info.velocity = velocity;
+        // Updating debug data
+        p->info.position = p->position;
+        p->info.velocity = velocity;
+    }
 }
 
 void Render(Particle* p){
@@ -27,7 +29,7 @@ void Render(Particle* p){
 }
 
 // Constructor Functions
-void InitParticle(Particle* p, Vector2 pos, Color c, float m, float rest, float r){
+void InitParticle(Particle* p, Vector2 pos, Color c, float m, float rest, float r, bool isPinned){
     // Attributes
     p->position = pos;
     p->oldPosition = pos;
@@ -37,6 +39,7 @@ void InitParticle(Particle* p, Vector2 pos, Color c, float m, float rest, float 
     p->radius = r;
     p->type = TYPE_PARTICLE;
     p->info = (DebugData){pos, p->oldPosition, c, r};
+    p->isPinned = isPinned;
 
     // Functions
     p->Update = Update;
