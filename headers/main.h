@@ -7,7 +7,7 @@
 
 // Defines
 #define MAX_PARTICLES 1000
-#define PARTICLE_NUM 20
+#define PARTICLE_NUM 100
 #define GRAVITY 200.81f
 #define DAMPING_FACTOR .999f
 
