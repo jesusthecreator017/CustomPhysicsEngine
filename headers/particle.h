@@ -8,7 +8,7 @@
 typedef struct particle{
     // Attributes
     Vector2 position;
-    Vector2 velocity;
+    Vector2 oldPosition;
     Color color;
     float mass;
     float restitution;

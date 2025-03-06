@@ -10,7 +10,7 @@ int main(void){
     // Array of particles
     Particle particles[MAX_PARTICLES];
 
-    int condition = 0;
+    //int condition = 0;
 
     for(int i = 0; i < PARTICLE_NUM; i++){
         InitParticle(
@@ -18,7 +18,7 @@ int main(void){
             (Vector2){GetRandomValue(10, GetScreenWidth()), GetRandomValue(10, GetScreenHeight())}, // Position
             (Color){GetRandomValue(0, 255), GetRandomValue(0, 255), GetRandomValue(0, 255), 255},   // Color
             GetRandomValue(2, 15),                                                                  // Mass
-            1.0f,                                                                                   // Restitution (Bounciness)
+            0.5f,                                                                                   // Restitution (Bounciness)
             GetRandomValue(5, 25)                                                                   // Radius
         );
     }
@@ -27,6 +27,13 @@ int main(void){
     while (!WindowShouldClose()){
         // Deltat time is used everywhere
         float dt = GetFrameTime();
+        dt = fminf(dt, 0.016f); // Clamp the DT to 60 FPS
+
+        // Apply Constraints
+        for(int i = 0; i < PARTICLE_NUM; i++){
+            Particle* current = &particles[i];
+            ConstrainParticle(current);
+        }
 
         // Update
         for(int i = 0; i < PARTICLE_NUM; i++){
@@ -34,6 +41,7 @@ int main(void){
             current->Update(current, dt);
         }
 
+        /*
         //Checks to see whether the user clicked on the left mouse button. 
         if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
         {
@@ -51,12 +59,7 @@ int main(void){
                 }
             }
         }
-        
-        // Apply Constraints
-        for(int i = 0; i < PARTICLE_NUM; i++){
-            Particle* current = &particles[i];
-            ConstrainParticle(current);
-        }
+        */
         
         // Render Logic Here
         BeginDrawing();
@@ -73,6 +76,7 @@ int main(void){
                 Particle* current = &particles[i];
                 current->Render(current);
             }
+
         EndDrawing();
     }
     
