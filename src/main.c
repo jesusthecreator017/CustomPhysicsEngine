@@ -57,7 +57,7 @@ int main(void){
 
     InitParticle(
         &particles[4],
-        (Vector2){500, 100},
+        (Vector2){500, 200},
         BLUE,
         GetRandomValue(10, 100),
         0.5f,
@@ -66,12 +66,12 @@ int main(void){
     );
 
 
-    InitStick(&sticks[0], &particles[0], &particles[1], 100.0f);
-    InitStick(&sticks[1], &particles[1], &particles[2], 100.0f);
-    InitStick(&sticks[2], &particles[2], &particles[3], 100.0f);
-    InitStick(&sticks[3], &particles[3], &particles[0], 100.0f);
-    InitStick(&sticks[4], &particles[0], &particles[2], 141.0f);
-    InitStick(&sticks[5], &particles[4], &particles[2], 200.0f);
+    InitStick(&sticks[0], &particles[0], &particles[1], Vector2Distance(particles[0].position, particles[1].position));
+    InitStick(&sticks[1], &particles[1], &particles[2], Vector2Distance(particles[1].position, particles[2].position));
+    InitStick(&sticks[2], &particles[2], &particles[3], Vector2Distance(particles[2].position, particles[3].position));
+    InitStick(&sticks[3], &particles[3], &particles[0], Vector2Distance(particles[3].position, particles[0].position));
+    InitStick(&sticks[4], &particles[0], &particles[2], Vector2Distance(particles[0].position, particles[2].position));
+    InitStick(&sticks[5], &particles[4], &particles[2], Vector2Distance(particles[4].position, particles[2].position));
 
     // Main Game Loop
     while (!WindowShouldClose()){
