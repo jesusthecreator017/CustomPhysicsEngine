@@ -1,5 +1,4 @@
-#include "particle.h"
-#include "main.h"
+#include "MouseOperations.h"
 
 void PickUpParticle(Particle particles[], int* condition)
 {

@@ -20,7 +20,7 @@ int main(void){
         (Vector2){500, 500},
         BLUE,
         GetRandomValue(10, 100),
-        0.1f,
+        0.5f,
         10.0f,
         false
     );
@@ -30,7 +30,7 @@ int main(void){
         (Vector2){600, 500},
         BLUE,
         GetRandomValue(10, 100),
-        0.1f,
+        0.5f,
         10.0f,
         false
     );
@@ -40,7 +40,7 @@ int main(void){
         (Vector2){600, 400},
         BLUE,
         GetRandomValue(10, 100),
-        0.1f,
+        0.5f,
         10.0f,
         false
     );
@@ -50,7 +50,7 @@ int main(void){
         (Vector2){500, 400},
         BLUE,
         GetRandomValue(10, 100),
-        0.1f,
+        0.5f,
         10.0f,
         false
     );
