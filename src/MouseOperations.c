@@ -16,11 +16,12 @@ void PickUpParticle(Particle particles[], int* condition){
             
             // Update oldPosition to create appropriate velocity
             particles[k].oldPosition = Vector2Subtract(particles[k].position, mouseVelocity);
+            
         }
         else
         {
             float distance = sqrtf(powf(particles[k].position.x - GetMouseX(), 2) + 
-                                  powf(particles[k].position.y - GetMouseY(), 2));
+                                   powf(particles[k].position.y - GetMouseY(), 2));
 
             if (distance <= particles[k].radius && *condition != 1)
             {
@@ -30,6 +31,7 @@ void PickUpParticle(Particle particles[], int* condition){
                 // When grabbing, keep oldPosition close to maintain low velocity
                 particles[k].oldPosition = particles[k].position;
                 particles[k].position = currentMousePos;
+                
             }
         }
     }

@@ -7,8 +7,9 @@ int main(void){
     InitWindow(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT, "Test Physics Engine");
 
     int condition = 0;
+    bool press = false;
 
-
+    
     // Array of particles
     Particle particles[PARTICLE_NUM];
     Stick sticks[STICK_NUM];
@@ -100,6 +101,7 @@ int main(void){
             PickUpParticle(particles, &condition); //(Found in MouseOperations.c)
         }
         else {
+            //No particle is currently being picked up, therefore it resets every particle value to the beginning state.
             condition = 0;
             for(int a = 0; a < PARTICLE_NUM; a++)
             {
@@ -116,23 +118,42 @@ int main(void){
             }
         }
         
+        
         // Render Logic Here
         BeginDrawing();
             ClearBackground(RAYWHITE);
             DrawFPS(GetScreenWidth() - 100, 10);
-            
-            // Render Objects Here
-            for(int i = 0; i < STICK_NUM; i++){
-                sticks[i].Render(&sticks[i]);
-            }
 
-            for(int i = 0; i < PARTICLE_NUM; i++){
-                Particle* current = &particles[i];
-                current->Render(current);
+            if(press != 1) DrawText("[a] To Enter Pendulum Mode", GetScreenWidth()/2 - 200, GetScreenHeight()/4, 25, BLUE); //Draws this when the program is in an inactive state (still in menu mode).
+            else DrawText("[z] To Exit Pendulum Mode", GetScreenWidth()/2 - 200, GetScreenHeight()/4 + 50, 25, BLUE);       //Draws this when the program is active. 
+
+            int charPress = GetCharPressed();       //Gets the unicode value of the char that was pressed on the keyboard.
+
+            //If the unicode is 97 ('a') then it draws the pendulum.
+            if(charPress == 97 || press == true)      
+            {
+                if(charPress == 122) press = false;     //If the unicode is 122 ('z') then it goes into the inactive state.
+                else
+                {
+                    //Global variable indicating program is active.
+                    press = true;
+                    
+                    // Render Objects Here
+                    for(int i = 0; i < STICK_NUM; i++){
+                        sticks[i].Render(&sticks[i]);
+                    }
+
+                    for(int i = 0; i < PARTICLE_NUM; i++){
+                        Particle* current = &particles[i];
+                        current->Render(current);
+                    }
+                    
+                    // Draw Debug info ontop of everything
+                    if(condition == 1) ObjectInfo(particles[1].info, particles[1].type);
+                }
             }
             
-            // Draw Debug info ontop of everything
-            ObjectInfo(particles[1].info, particles[1].type);
+            
         EndDrawing();
     }
     
