@@ -83,8 +83,21 @@ void ResolveCollision(Particle* a, Particle* b) {
 
     // Compute penetration depth and apply **fractional correction** (50% each)
     float penetrationDepth = (radiusSum - distance) * 0.5f;
-    a->position = Vector2Subtract(a->position, Vector2Scale(collisionNormal, penetrationDepth));
-    b->position = Vector2Add(b->position, Vector2Scale(collisionNormal, penetrationDepth));
+
+    // Add a relaxation factor to prevent over-correction
+    float relaxationFactor = 0.4f;
+    penetrationDepth *= relaxationFactor;
+
+    // Apply correction based on masses
+    float totalMass = a->mass + b->mass;
+    float aFactor = b->mass / totalMass;
+    float bFactor = a->mass / totalMass;
+
+    if (!a->isPinned)
+        a->position = Vector2Subtract(a->position, Vector2Scale(collisionNormal, penetrationDepth * aFactor));
+    if (!b->isPinned)
+        b->position = Vector2Add(b->position, Vector2Scale(collisionNormal, penetrationDepth * bFactor));
+
 
     // Compute relative velocity using Verlet method
     Vector2 relativeVelocity = Vector2Subtract(

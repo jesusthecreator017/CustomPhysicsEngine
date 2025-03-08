@@ -1,6 +1,4 @@
 // Import main header file
-// Added so that I can push something
-#include "particle.h"
 #include "MouseOperations.h"
 #include "sticks.h"
 
@@ -66,12 +64,12 @@ int main(void){
     );
 
 
-    InitStick(&sticks[0], &particles[0], &particles[1], Vector2Distance(particles[0].position, particles[1].position));
-    InitStick(&sticks[1], &particles[1], &particles[2], Vector2Distance(particles[1].position, particles[2].position));
-    InitStick(&sticks[2], &particles[2], &particles[3], Vector2Distance(particles[2].position, particles[3].position));
-    InitStick(&sticks[3], &particles[3], &particles[0], Vector2Distance(particles[3].position, particles[0].position));
-    InitStick(&sticks[4], &particles[0], &particles[2], Vector2Distance(particles[0].position, particles[2].position));
-    InitStick(&sticks[5], &particles[4], &particles[2], Vector2Distance(particles[4].position, particles[2].position));
+    InitStick(&sticks[0], &particles[0], &particles[1], Vector2Distance(particles[0].position, particles[1].position), Vector2Distance(particles[0].position, particles[1].position) - 10.0f);
+    InitStick(&sticks[1], &particles[1], &particles[2], Vector2Distance(particles[1].position, particles[2].position), Vector2Distance(particles[1].position, particles[2].position) - 10.0f);
+    InitStick(&sticks[2], &particles[2], &particles[3], Vector2Distance(particles[2].position, particles[3].position), Vector2Distance(particles[2].position, particles[3].position) - 10.0f);
+    InitStick(&sticks[5], &particles[4], &particles[2], Vector2Distance(particles[4].position, particles[2].position), Vector2Distance(particles[4].position, particles[2].position) - 10.0f);
+    InitStick(&sticks[3], &particles[3], &particles[0], Vector2Distance(particles[3].position, particles[0].position), Vector2Distance(particles[3].position, particles[0].position) - 10.0f);
+    InitStick(&sticks[4], &particles[0], &particles[2], Vector2Distance(particles[0].position, particles[2].position), Vector2Distance(particles[0].position, particles[2].position) / 2);
 
     // Main Game Loop
     while (!WindowShouldClose()){
@@ -90,34 +88,30 @@ int main(void){
             Particle* current = &particles[i];
             current->Update(current, dt);
         }
+
+        // Update all sticks
+        for (int j = 0; j < STICK_NUM; j++) {
+            sticks[j].Update(&sticks[j]);
+        }
         
 
-        for(int i = 0; i < STICK_NUM; i++){
-            sticks[i].Update(&sticks[i]);
-        }
-
         //Checks to see whether the user clicked on the left mouse button. 
-        if(IsMouseButtonDown(MOUSE_LEFT_BUTTON))
-        {
+        if(IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
             PickUpParticle(particles, &condition); //(Found in MouseOperations.c)
         }
-        else
-        {
+        else {
             condition = 0;
             for(int a = 0; a < PARTICLE_NUM; a++)
             {
                 particles[a].isGrabbed = 0;
             }
         }
-        
-        // Check Collisions
-        for (int i = 0; i < PARTICLE_NUM; i++) {
-            for (int j = i + 1; j < PARTICLE_NUM; j++) {  // Compare each pair only once
-                Particle* p1 = &particles[i];
-                Particle* p2 = &particles[j];
                 
-                if (ParticleVsParticle(p1, p2)) {
-                    ResolveCollision(p1, p2);
+        // Resolve collisions
+        for (int j = 0; j < PARTICLE_NUM; j++) {
+            for (int k = j + 1; k < PARTICLE_NUM; k++) {
+                if (ParticleVsParticle(&particles[j], &particles[k])) {
+                    ResolveCollision(&particles[j], &particles[k]);
                 }
             }
         }

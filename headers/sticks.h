@@ -9,6 +9,7 @@ typedef struct stick{
     // Attributes
     Particle* particlePositions[PAIR];
     float length;
+    float minLength;
 
     // Methods
     void (*Update)(struct stick* s);
@@ -18,6 +19,6 @@ typedef struct stick{
 void UpdateStick(Stick* s);
 void RenderStick(Stick* s);
 
-void InitStick(Stick* s, Particle* p1, Particle* p2, float len);
+void InitStick(Stick* s, Particle* p1, Particle* p2, float len, float minLen);
 
 #endif
