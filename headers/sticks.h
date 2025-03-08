@@ -1,13 +1,13 @@
 #ifndef STICKS_H
 #define STICKS_H
 
-#include "main.h"
+#include "particle.h"
 
 #define PAIR 2
 
 typedef struct stick{
     // Attributes
-    Vector2* particlePositions[PAIR];
+    Particle* particlePositions[PAIR];
     float length;
 
     // Methods
@@ -18,6 +18,6 @@ typedef struct stick{
 void UpdateStick(Stick* s);
 void RenderStick(Stick* s);
 
-void InitStick(Stick* s, Vector2* pos1, Vector2* pos2, float len);
+void InitStick(Stick* s, Particle* p1, Particle* p2, float len);
 
 #endif
