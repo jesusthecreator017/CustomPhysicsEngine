@@ -218,7 +218,6 @@ void SwitchScene(Engine* engine, SceneType newScene){
     engine->InitScene(engine, newScene);
 }
 
-// Function to initialize a specific scene
 void InitScene(Engine* engine, SceneType scene) {
     // Set particle and stick count based on scene before freeing memory
     switch(scene) {
