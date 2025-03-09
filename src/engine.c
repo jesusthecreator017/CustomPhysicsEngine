@@ -332,16 +332,16 @@ void InitScene(Engine* engine, SceneType scene) {
 
 // Function to update a specific scene
 void UpdateScene(Engine* engine, float dt) {
+    //Most scenes should use the general physics
+    if (engine->isActive) {
+        UpdatePhysics(engine, dt);
+    }
+
     // Scene-specific updates could be added here
     switch(engine->currentScene) {
         case SCENE_MENU:
             // Menu doesn't need physics updates
             break;
-        case SCENE_PENDULUM:
-            // Use the mendulum Physics
-            if (engine->isActive) {
-                UpdatePhysics(engine, dt);
-            }
         default:
             break;
     }
