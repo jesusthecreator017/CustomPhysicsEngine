@@ -8,6 +8,9 @@ int main(void) {
     Engine engine;
     InitEngine(&engine, PARTICLE_NUM, STICK_NUM);
     
+    // Initialize the first scene (explicitly call it here to be safe)
+    engine.InitScene(&engine, SCENE_MENU);
+    
     // Main Game Loop
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
@@ -15,24 +18,32 @@ int main(void) {
         // Handle user input
         engine.HandleInput(&engine);
         
-        // Update physics
-        engine.Update(&engine, dt);
+        // Update physics (only if a scene is active)
+        if (engine.isActive) {
+            engine.Update(&engine, dt);
+        }
+        
+        // Update scene-specific logic (check for NULL to prevent segfault)
+        if (engine.UpdateScene != NULL) {
+            engine.UpdateScene(&engine, dt);
+        }
         
         // Render
         BeginDrawing();
-        ClearBackground(RAYWHITE);
-        DrawFPS(GetScreenWidth() - 100, 10);
-        
-        if (!engine.isActive) {
-            DrawText("Welcome to our Custom Physics Engine!", GetScreenWidth()/2 - 300, GetScreenHeight()-550, 30, BLUE);
-            DrawText("Created by Jesus, Chase, Alvaro.", GetScreenWidth()/2 - 300, GetScreenHeight()-450, 25, BLUE);
-            DrawText("Version 0.1 - 03/09", GetScreenWidth()/2 - 300, GetScreenHeight()-400, 25, BLUE);
-            DrawText("[a] To Enter Pendulum Mode", GetScreenWidth()/2 - 200, GetScreenHeight()/4 + 300, 25, BLUE);
-        } else {
-            DrawText("[z] To Exit Pendulum Mode", GetScreenWidth()/2 - 200, GetScreenHeight()/4 + 300, 25, BLUE);
-            engine.Render(&engine);
-        }
-        
+            ClearBackground(RAYWHITE);
+            DrawFPS(GetScreenWidth() - 100, 10);
+            
+            // Render the current scene (check for NULL to prevent segfault)
+            if (engine.RenderScene != NULL) {
+                engine.RenderScene(&engine);
+            } else {
+                // Fallback rendering if RenderScene isn't available
+                if (engine.isActive) {
+                    engine.Render(&engine);
+                } else {
+                    DrawText("Scene system not initialized", 20, 20, 20, RED);
+                }
+            }
         EndDrawing();
     }
     

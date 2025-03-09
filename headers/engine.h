@@ -9,6 +9,15 @@
 #define PHYSICS_TIME_STEP 1.0f/60.0f
 #define MAX_PHYSICS_STEPS 5
 
+// Scene Enum
+typedef enum {
+    SCENE_MENU,
+    SCENE_PENDULUM,
+    SCENE_CLOTH,
+    SCENE_PARTICLES
+} SceneType;
+
+
 typedef struct Engine{
     // Resources
     Particle* particles;
@@ -21,6 +30,9 @@ typedef struct Engine{
     float accumulator;
     int constraintIterations;
     float globalDamping;
+
+    // Scene Type
+    SceneType currentScene;
     
     // Input handling
     int mouseGrabCondition;
@@ -28,12 +40,17 @@ typedef struct Engine{
     // UI state
     bool isActive;
     
-    // Methods
+    // Main Methods
     void (*Initialize)(struct Engine* engine, int particleCount, int stickCount);
     void (*Update)(struct Engine* engine, float deltaTime);
     void (*Render)(struct Engine* engine);
     void (*HandleInput)(struct Engine* engine);
     void (*Shutdown)(struct Engine* engine);
+
+    // Scene Methods (For scene specific operations)
+    void (*InitScene)(struct Engine* engine, SceneType scene);
+    void (*UpdateScene)(struct Engine* engine, float dt);
+    void (*RenderScene)(struct Engine* engine);
 } Engine;
 
 // Constructor/destructor functions
@@ -48,5 +65,12 @@ void UpdatePhysics(Engine* engine, float dt);
 
 // Helper functions
 void CreateParticleNetwork(Engine* engine);
+
+void SwitchScene(Engine* engine, SceneType newScene);
+
+// Scene Function Definitions
+void InitScene(Engine* engine, SceneType scene);
+void UpdateScene(Engine* engine, float dt);
+void RenderScene(Engine* engine);
 
 #endif
