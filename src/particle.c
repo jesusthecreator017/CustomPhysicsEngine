@@ -21,6 +21,7 @@ void Update(Particle* p, float dt){
         // Updating debug data
         p->info.position = p->position;
         p->info.velocity = velocity;
+        p->info.color = p->color;
     }
 }
 

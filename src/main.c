@@ -130,8 +130,15 @@ int main(void){
             DrawFPS(GetScreenWidth() - 100, 10);
 
             // User enters input to enter/exit Pendulum mode
-            if(press != 1) DrawText("[a] To Enter Pendulum Mode", GetScreenWidth()/2 - 200, GetScreenHeight()/4, 25, BLUE); //Draws this when the program is in an inactive state (still in menu mode).
-            else DrawText("[z] To Exit Pendulum Mode", GetScreenWidth()/2 - 200, GetScreenHeight()/4 + 50, 25, BLUE);       //Draws this when the program is active. 
+            if(press != 1) 
+            {
+                DrawText("Welcome to our Custom Physics Engine!", GetScreenWidth()/2 - 300, GetScreenHeight()-550, 30, BLUE);
+                DrawText("Created by Jesus, Chase, Alvaro.", GetScreenWidth()/2 - 300, GetScreenHeight()-450, 25, BLUE);
+                DrawText("Version 0.1 - 03/09", GetScreenWidth()/2 - 300, GetScreenHeight()-400, 25, BLUE);
+                DrawText("[a] To Enter Pendulum Mode", GetScreenWidth()/2 - 200, GetScreenHeight()-50, 25, BLUE); //Draws this when the program is in an inactive state (still in menu mode).
+            }
+
+            else DrawText("[z] To Exit Pendulum Mode", GetScreenWidth()/2 - 200, GetScreenHeight()-50, 25, BLUE);       //Draws this when the program is active. 
 
             int charPress = IsKeyPressed(KEY_A);       //See's whether or not the 'a' key was pressed on the keyboard.
 
@@ -156,7 +163,9 @@ int main(void){
                     }
                     
                     // Draw Debug info ontop of everything
-                    if(condition == 1) ObjectInfo(particles[1].info, particles[1].type);
+                    if(condition == 1){
+                        ObjectInfo(particles[1].info, particles[1].type);
+                    }
                 }
             }
             
