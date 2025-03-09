@@ -14,6 +14,7 @@ int main(void){
     Particle particles[PARTICLE_NUM];
     Stick sticks[STICK_NUM];
 
+    // Creates particle 1/5
     InitParticle(
         &particles[0],
         (Vector2){500, 500},
@@ -24,6 +25,7 @@ int main(void){
         false
     );
 
+     // Creates particle 2/5
     InitParticle(
         &particles[1],
         (Vector2){600, 500},
@@ -34,6 +36,7 @@ int main(void){
         false
     );
 
+     // Creates particle 3/5
     InitParticle(
         &particles[2],
         (Vector2){600, 400},
@@ -44,6 +47,7 @@ int main(void){
         false
     );
 
+     // Creates particle 4/5
     InitParticle(
         &particles[3],
         (Vector2){500, 400},
@@ -54,6 +58,7 @@ int main(void){
         false
     );
 
+     // Creates particle 5/5
     InitParticle(
         &particles[4],
         (Vector2){500, 200},
@@ -64,7 +69,7 @@ int main(void){
         true
     );
 
-
+    // Creates the 5 sticks, 4 for the square and 1 for the one that moves
     InitStick(&sticks[0], &particles[0], &particles[1], Vector2Distance(particles[0].position, particles[1].position), Vector2Distance(particles[0].position, particles[1].position) - 10.0f);
     InitStick(&sticks[1], &particles[1], &particles[2], Vector2Distance(particles[1].position, particles[2].position), Vector2Distance(particles[1].position, particles[2].position) - 10.0f);
     InitStick(&sticks[2], &particles[2], &particles[3], Vector2Distance(particles[2].position, particles[3].position), Vector2Distance(particles[2].position, particles[3].position) - 10.0f);
@@ -124,6 +129,7 @@ int main(void){
             ClearBackground(RAYWHITE);
             DrawFPS(GetScreenWidth() - 100, 10);
 
+            // User enters input to enter/exit Pendulum mode
             if(press != 1) DrawText("[a] To Enter Pendulum Mode", GetScreenWidth()/2 - 200, GetScreenHeight()/4, 25, BLUE); //Draws this when the program is in an inactive state (still in menu mode).
             else DrawText("[z] To Exit Pendulum Mode", GetScreenWidth()/2 - 200, GetScreenHeight()/4 + 50, 25, BLUE);       //Draws this when the program is active. 
 

@@ -1,5 +1,6 @@
 #include "debug.h"
 
+// Takes in the info about a particle, and returns it accordingly
 void ObjectInfo(DebugData data, ObjectType type){
     if(type == TYPE_PARTICLE){
         // Draw Background Rec First
