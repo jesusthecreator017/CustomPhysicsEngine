@@ -189,9 +189,6 @@ void CreateParticleNetwork(Engine* engine) {
         true
     );
     
-    // Initialize remaining particles similar to your main file
-    // ...
-    
     // Initialize sticks
     InitStick(&engine->sticks[0], &engine->particles[0], &engine->particles[1], Vector2Distance(engine->particles[0].position, engine->particles[1].position), Vector2Distance(engine->particles[0].position, engine->particles[1].position) - 10.0f);
     InitStick(&engine->sticks[1], &engine->particles[1], &engine->particles[2], Vector2Distance(engine->particles[1].position, engine->particles[2].position), Vector2Distance(engine->particles[1].position, engine->particles[2].position) - 10.0f);
