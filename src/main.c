@@ -12,6 +12,9 @@ int main(void) {
     Particle particles[PARTICLE_NUM];
     Stick sticks[STICK_NUM];
 
+    int press = 0;
+    int condition = 0;
+
     // Creates particle 1/5
     InitParticle(
         &particles[0],
