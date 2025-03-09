@@ -21,14 +21,16 @@ void Update(Particle* p, float dt){
         // Updating debug data
         p->info.position = p->position;
         p->info.velocity = velocity;
+        p->info.color = p->color;
     }
 }
 
+// Creates the particle circle and rednders it appropirately
 void Render(Particle* p){
     DrawCircleV(p->position, p->radius, p->color);
 }
 
-// Constructor Functions
+// Constructor Functions that creates particle
 void InitParticle(Particle* p, Vector2 pos, Color c, float m, float rest, float r, bool isPinned){
     // Attributes
     p->position = pos;
@@ -69,6 +71,7 @@ void ConstrainParticle(Particle* p){
     }
 }
 
+// Calculates the physics needed for the collison within the particles
 void ResolveCollision(Particle* a, Particle* b) {
     // Compute collision normal
     Vector2 collisionNormal = Vector2Subtract(b->position, a->position);
@@ -125,7 +128,7 @@ void ResolveCollision(Particle* a, Particle* b) {
     b->oldPosition = Vector2Add(b->oldPosition, Vector2Scale(impulse, 1.0f / b->mass));
 }
 
-
+// Checks for when a particle is within another particle 
 bool ParticleVsParticle(Particle* a, Particle* b){
     float r = a->radius + b->radius;
     r *= r; // Squaring the sum of radii

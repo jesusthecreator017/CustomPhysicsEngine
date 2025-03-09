@@ -1,10 +1,11 @@
 #include "sticks.h"
 
-
+// Draws and renders the stick, including the starting position and color
 void RenderStick(Stick* s){
     DrawLineEx(s->particlePositions[0]->position, s->particlePositions[1]->position, 2.0f, BLACK);
 }
 
+// Creates a stick within a given length and where it starts/end
 void InitStick(Stick* s, Particle* p1, Particle* p2, float maxLen, float minLen){
     // Attributes
     s->particlePositions[0] = p1;
@@ -24,8 +25,7 @@ void UpdateStick(Stick* s){
     
     if (distance == 0) return; // Prevent division by zero
     
-    float diff;
-    float percent;
+    float diff, percent;
     
     // Apply the appropriate constraint
     if (distance > s->length) {
