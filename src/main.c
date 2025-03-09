@@ -127,12 +127,13 @@ int main(void){
             if(press != 1) DrawText("[a] To Enter Pendulum Mode", GetScreenWidth()/2 - 200, GetScreenHeight()/4, 25, BLUE); //Draws this when the program is in an inactive state (still in menu mode).
             else DrawText("[z] To Exit Pendulum Mode", GetScreenWidth()/2 - 200, GetScreenHeight()/4 + 50, 25, BLUE);       //Draws this when the program is active. 
 
-            int charPress = GetCharPressed();       //Gets the unicode value of the char that was pressed on the keyboard.
+            int charPress = IsKeyPressed(KEY_A);       //See's whether or not the 'a' key was pressed on the keyboard.
 
-            //If the unicode is 97 ('a') then it draws the pendulum.
-            if(charPress == 97 || press == true)      
+            //If the 'a' key is pressed on the keyboard, the program shifts to the active state.
+            if(charPress == true || press == true)      
             {
-                if(charPress == 122) press = false;     //If the unicode is 122 ('z') then it goes into the inactive state.
+                charPress = IsKeyPressed(KEY_Z);
+                if(charPress == true) press = false;     //If the 'z' key is pressed on the keyboard, the program changes to the inactive state.
                 else
                 {
                     //Global variable indicating program is active.
