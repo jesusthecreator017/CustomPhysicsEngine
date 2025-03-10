@@ -26,3 +26,9 @@
 #define MAIN_WINDOW_WIDTH 1280
 #define MAIN_WINDOW_HEIGHT 720
 #define FPS 60
+
+// Optimization settings
+#define GRID_CELL_SIZE 50  // Adjust based on your typical particle sizes
+#define GRID_WIDTH (MAIN_WINDOW_WIDTH / GRID_CELL_SIZE + 1)
+#define GRID_HEIGHT (MAIN_WINDOW_HEIGHT / GRID_CELL_SIZE + 1)
+#define MAX_PARTICLES_PER_CELL 5

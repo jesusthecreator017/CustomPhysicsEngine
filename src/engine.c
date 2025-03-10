@@ -75,7 +75,11 @@ void EngineUpdate(Engine* engine, float deltaTime) {
 
 // Update physics at a fixed timestep
 void UpdatePhysics(Engine* engine, float dt) {
-    // Apply global damping to all particles
+    // First, initialize a spatial grid
+    SpatialGrid grid;
+    InitGrid(&grid);
+    
+    // Apply forces and update all particles
     for (int i = 0; i < engine->particleCount; i++) {
         engine->particles[i].Update(&engine->particles[i], dt);
     }
@@ -92,15 +96,11 @@ void UpdatePhysics(Engine* engine, float dt) {
             engine->sticks[j].Update(&engine->sticks[j]);
         }
         
+        // Update the grid with current particle positions
+        UpdateGrid(&grid, engine->particles, engine->particleCount);
         
-        // Resolve particle-particle collisions
-        for (int j = 0; j < engine->particleCount; j++) {
-            for (int k = j + 1; k < engine->particleCount; k++) {
-                if (ParticleVsParticle(&engine->particles[j], &engine->particles[k])) {
-                    ResolveCollision(&engine->particles[j], &engine->particles[k]);
-                }
-            }
-        }
+        // Use the grid for collision detection and resolution
+        CheckGridCollisions(&grid);
     }
 }
 
@@ -251,7 +251,7 @@ void InitScene(Engine* engine, SceneType scene) {
             break;
             
         case SCENE_PARTICLES:
-            engine->particleCount = 100;
+            engine->particleCount = 200;
             engine->stickCount = 0; // No sticks needed
             break;
 
@@ -327,7 +327,7 @@ void InitScene(Engine* engine, SceneType scene) {
                                      10, 
                                      0.5f, 
                                      5.0f, 
-                                     y == 0);
+                                     (y == 0 && x == 0) || (y == 0 && x == cols - 1));
                     }
                 }
                 
