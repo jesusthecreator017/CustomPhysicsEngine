@@ -14,7 +14,8 @@ typedef enum {
     SCENE_MENU,
     SCENE_PENDULUM,
     SCENE_CLOTH,
-    SCENE_PARTICLES
+    SCENE_PARTICLES,
+    SCENE_SOCCER
 } SceneType;
 
 

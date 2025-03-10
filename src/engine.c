@@ -133,9 +133,13 @@ void EngineHandleInput(Engine* engine) {
     else if (IsKeyPressed(KEY_D)) {
         SwitchScene(engine, SCENE_PARTICLES);
     }
+    else if (IsKeyPressed(KEY_F)) {
+        SwitchScene(engine, SCENE_SOCCER);
+    }
     else if (IsKeyPressed(KEY_Z)) {
         SwitchScene(engine, SCENE_MENU);
     }
+    
     
     // Handle mouse interactions
     if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
@@ -240,8 +244,13 @@ void InitScene(Engine* engine, SceneType scene) {
             break;
             
         case SCENE_PARTICLES:
-            engine->particleCount = 50; // Example: 50 random particles
+            engine->particleCount = 5; // Example: 50 random particles
             engine->stickCount = 0; // No sticks needed
+            break;
+
+        case SCENE_SOCCER:
+            engine->particleCount = 1; 
+            engine->stickCount = 0; 
             break;
             
         default:
@@ -277,9 +286,22 @@ void InitScene(Engine* engine, SceneType scene) {
             break;
         case SCENE_PENDULUM:
             // Initialize pendulum setup
-            InitParticle(&engine->particles[0], (Vector2){GetScreenWidth()/2, 100}, BLUE, 50, 0.5f, 10.0f, true);
+            InitParticle(&engine->particles[0], (Vector2){GetScreenWidth()/2, 100}, 
+            BLUE, 
+            50, 
+            0.5f, 
+            10.0f, 
+            true);
+            
             for (int i = 1; i <= 5; i++) {
-                InitParticle(&engine->particles[i], (Vector2){GetScreenWidth()/2, 100 + i * 60}, RED, 30, 0.5f, 10.0f, false);
+                InitParticle(&engine->particles[i], 
+                (Vector2){GetScreenWidth()/2, 100 + i * 60},
+                (Color){GetRandomValue(50, 255), GetRandomValue(50, 255), GetRandomValue(50, 255), 255},
+                30,
+                0.5f, 
+                10.0f, 
+                false);
+
                 InitStick(&engine->sticks[i-1], &engine->particles[i-1], &engine->particles[i], 60.0f, 60.0f);
             }
             break;
@@ -294,7 +316,11 @@ void InitScene(Engine* engine, SceneType scene) {
                         int index = y * cols + x;
                         InitParticle(&engine->particles[index], 
                                      (Vector2){GetScreenWidth()/2 - (cols * spacing)/2 + x * spacing, 200 + y * spacing}, 
-                                     BLUE, 10, 0.5f, 5.0f, y == 0);
+                                     (Color){GetRandomValue(50, 255), GetRandomValue(50, 255), GetRandomValue(50, 255), 255}, 
+                                     10, 
+                                     0.5f, 
+                                     5.0f, 
+                                     y == 0);
                     }
                 }
                 
@@ -320,9 +346,23 @@ void InitScene(Engine* engine, SceneType scene) {
                 InitParticle(&engine->particles[i], 
                              (Vector2){GetRandomValue(100, GetScreenWidth()-100), GetRandomValue(100, GetScreenHeight()-100)}, 
                              (Color){GetRandomValue(50, 255), GetRandomValue(50, 255), GetRandomValue(50, 255), 255}, 
-                             GetRandomValue(10, 30), 0.5f, 10.0f, false);
+                             GetRandomValue(10, 30), 
+                             0.5f, 
+                             10.0f, 
+                             false);
             }
             break;
+        
+        case SCENE_SOCCER:
+            InitParticle(&engine->particles[0], 
+                                (Vector2){GetRandomValue(100, GetScreenWidth()-100), GetRandomValue(100, GetScreenHeight()-100)}, 
+                                (Color){128, 0, 0, 255}, 
+                                50, 
+                                0.5f, 
+                                35.0f, 
+                                false);
+            break;
+
         default:
             CreateParticleNetwork(engine);
             break;
@@ -355,32 +395,52 @@ void RenderScene(Engine* engine) {
     // Add scene-specific UI elements
     switch(engine->currentScene) {
         case SCENE_MENU:
+            DrawText("New in Version 0.11:", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 300, 30, BLUE);
+            DrawText("- Engine code simplified, Added support for scenes", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 250, 20, BLUE);
+            DrawText("- New 'Soccer Game' scene!", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 200, 20, BLUE);
+
             DrawText("Welcome to our Custom Physics Engine!", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 100, 30, BLUE);
             DrawText("Created by Jesus, Chase, Alvaro.", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 50, 25, BLUE);
-            DrawText("Version 0.1 - 03/09", GetScreenWidth()/2 - 300, GetScreenHeight()/2, 25, BLUE);
+            DrawText("Version 0.11 - 03/10", GetScreenWidth()/2 - 300, GetScreenHeight()/2, 25, BLUE);
             
-            DrawText("[a] Pendulum Simulation", GetScreenWidth()/2 - 200, GetScreenHeight()/2 + 100, 25, BLUE);
-            DrawText("[s] Cloth Simulation", GetScreenWidth()/2 - 200, GetScreenHeight()/2 + 150, 25, BLUE);
-            DrawText("[d] Particle System", GetScreenWidth()/2 - 200, GetScreenHeight()/2 + 200, 25, BLUE);
+            DrawText("List of Current Modes: ", GetScreenWidth()/2 - 300, GetScreenHeight()/2 + 65, 25, BLUE);
+            DrawText("[a] - Pendulum Simulation", GetScreenWidth()/2 - 300, GetScreenHeight()/2 + 100, 25, BLUE);
+            DrawText("[s] - Cloth Simulation", GetScreenWidth()/2 - 300, GetScreenHeight()/2 + 150, 25, BLUE);
+            DrawText("[d] - Particle System", GetScreenWidth()/2 - 300, GetScreenHeight()/2 + 200, 25, BLUE);
+            DrawText("[f] - Soccer Game", GetScreenWidth()/2 - 300, GetScreenHeight()/2 + 250, 25, BLUE);
             break;
-            
+        
+        
         case SCENE_PENDULUM:
-            DrawText("Pendulum Simulation", 20, 20, 20, DARKBLUE);
+            DrawText("Pendulum Simulation", 10, 110, 20, DARKBLUE);
+
+            DrawText("[a] Restart scene", 20, GetScreenHeight() - 70, 20, BLUE);
             DrawText("[z] Return to Menu", 20, GetScreenHeight() - 40, 20, BLUE);
             break;
             
         case SCENE_CLOTH:
-            DrawText("Cloth Simulation", 20, 20, 20, DARKBLUE);
+            DrawText("Cloth Simulation", 10, 110, 20, DARKBLUE);
+
+            DrawText("[s] Restart scene", 20, GetScreenHeight() - 70, 20, BLUE);
             DrawText("[z] Return to Menu", 20, GetScreenHeight() - 40, 20, BLUE);
             break;
             
         case SCENE_PARTICLES:
-            DrawText("Particle System", 20, 20, 20, DARKBLUE);
+            DrawText("Particle System", 10, 110, 20, DARKBLUE);
+
+            DrawText("[d] Restart scene", 20, GetScreenHeight() - 70, 20, BLUE);
             DrawText("[z] Return to Menu", 20, GetScreenHeight() - 40, 20, BLUE);
             break;
-            
+    
+        case SCENE_SOCCER:
+            DrawText("Soccer Game", 10, 110, 20, DARKBLUE);
+
+            DrawText("[f] Restart scene", 20, GetScreenHeight() - 70, 20, BLUE);
+            DrawText("[z] Return to Menu", 20, GetScreenHeight() - 40, 20, BLUE);
+            break;
+
         default:
             DrawText("[z] Return to Menu", 20, GetScreenHeight() - 40, 20, BLUE);
             break;
     }
-}
+ }
