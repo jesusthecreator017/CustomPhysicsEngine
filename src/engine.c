@@ -85,6 +85,7 @@ void UpdatePhysics(Engine* engine, float dt) {
             engine->sticks[j].Update(&engine->sticks[j]);
         }
         
+        /*
         // Resolve collisions
         for (int j = 0; j < engine->particleCount; j++) {
             for (int k = j + 1; k < engine->particleCount; k++) {
@@ -93,6 +94,7 @@ void UpdatePhysics(Engine* engine, float dt) {
                 }
             }
         }
+        */
     }
 }
 
