@@ -51,16 +51,23 @@ void ShutdownEngine(Engine* engine) {
 
 // Update physics with fixed timestep
 void EngineUpdate(Engine* engine, float deltaTime) {
-    // Cap delta time to prevent spiral of death
+    // Cap delta time to prevent spiral of death if frame rate drops too low
     if (deltaTime > 0.25f) deltaTime = 0.25f;
     
     // Accumulate time
     engine->accumulator += deltaTime;
     
-    // Run physics at fixed intervals
+    // Run fixed physics steps based on accumulated time
     int steps = 0;
     while (engine->accumulator >= engine->timeStep && steps < MAX_PHYSICS_STEPS) {
-        UpdatePhysics(engine, engine->timeStep);
+        // Process physics substeps for more accuracy
+        const int substeps = 2;  // Number of substeps
+        float subDt = engine->timeStep / substeps;
+        
+        for (int i = 0; i < substeps; i++) {
+            UpdatePhysics(engine, subDt);
+        }
+        
         engine->accumulator -= engine->timeStep;
         steps++;
     }
@@ -68,25 +75,25 @@ void EngineUpdate(Engine* engine, float deltaTime) {
 
 // Update physics at a fixed timestep
 void UpdatePhysics(Engine* engine, float dt) {
-    // Apply constraints first
-    for (int i = 0; i < engine->particleCount; i++) {
-        ConstrainParticle(&engine->particles[i]);
-    }
-    
-    // Update all particles
+    // Apply global damping to all particles
     for (int i = 0; i < engine->particleCount; i++) {
         engine->particles[i].Update(&engine->particles[i], dt);
     }
     
+    // Apply constraints (boundaries)
+    for (int i = 0; i < engine->particleCount; i++) {
+        ConstrainParticle(&engine->particles[i]);
+    }
+    
     // Run constraint solving iterations
-    for (int i = 0; i < engine->constraintIterations; i++) {
-        // Update all sticks
+    for (int iter = 0; iter < engine->constraintIterations; iter++) {
+        // Update all sticks (distance constraints)
         for (int j = 0; j < engine->stickCount; j++) {
             engine->sticks[j].Update(&engine->sticks[j]);
         }
         
-        /*
-        // Resolve collisions
+        
+        // Resolve particle-particle collisions
         for (int j = 0; j < engine->particleCount; j++) {
             for (int k = j + 1; k < engine->particleCount; k++) {
                 if (ParticleVsParticle(&engine->particles[j], &engine->particles[k])) {
@@ -94,7 +101,6 @@ void UpdatePhysics(Engine* engine, float dt) {
                 }
             }
         }
-        */
     }
 }
 
@@ -154,7 +160,6 @@ void EngineHandleInput(Engine* engine) {
         }
     }
 }
-
 // Create initial network of particles
 void CreateParticleNetwork(Engine* engine) {
     // Initialize particles with your standard setup
@@ -246,7 +251,7 @@ void InitScene(Engine* engine, SceneType scene) {
             break;
             
         case SCENE_PARTICLES:
-            engine->particleCount = 5; // Example: 50 random particles
+            engine->particleCount = 100;
             engine->stickCount = 0; // No sticks needed
             break;
 

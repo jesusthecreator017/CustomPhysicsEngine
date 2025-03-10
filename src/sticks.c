@@ -19,43 +19,20 @@ void InitStick(Stick* s, Particle* p1, Particle* p2, float maxLen, float minLen)
 
 // And update the UpdateStick function
 void UpdateStick(Stick* s){
-    float dx = s->particlePositions[1]->position.x - s->particlePositions[0]->position.x;
-    float dy = s->particlePositions[1]->position.y - s->particlePositions[0]->position.y;
-    float distance = sqrtf(dx*dx + dy*dy);
-    
-    if (distance == 0) return; // Prevent division by zero
-    
-    float diff, percent;
-    
-    // Apply the appropriate constraint
-    if (distance > s->length) {
-        // Too far - pull particles closer
-        diff = s->length - distance;
-        percent = (diff / distance) / 2;
-    }
-    else if (distance < s->minLength) {
-        // Too close - push particles apart
-        diff = s->minLength - distance;
-        percent = (diff / distance) / 2;
-    }
-    else {
-        // Within allowed range - do nothing
-        return;
-    }
-    
-    // Add damping factor
-    float dampingFactor = 0.95;
-    percent *= dampingFactor;
-    
-    Vector2 offset = {dx * percent, dy * percent};
+    // Ignore Momentarily
+    Vector2 axis = Vector2Subtract(s->particlePositions[1]->position, s->particlePositions[0]->position);
+    float distance = Vector2Length(axis);
+    Vector2 distanceVector = {distance, distance};
+    Vector2 n = Vector2Divide(axis, distanceVector);
+    float delta = s->length - distance;
 
     if (!s->particlePositions[0]->isPinned){
-        s->particlePositions[0]->position.x -= offset.x;
-        s->particlePositions[0]->position.y -= offset.y;
+        s->particlePositions[0]->position.x -= 0.5f * n.x * delta;
+        s->particlePositions[0]->position.y -= 0.5f * n.y * delta;
     }
     
     if(!s->particlePositions[1]->isPinned){
-        s->particlePositions[1]->position.x += offset.x;
-        s->particlePositions[1]->position.y += offset.y;
+        s->particlePositions[1]->position.x += 0.5f * n.x * delta;
+        s->particlePositions[1]->position.y += 0.5f * n.y * delta;
     }
 }
