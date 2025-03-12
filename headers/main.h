@@ -8,7 +8,7 @@
 // Defines
 #define MAX_PARTICLES 1000
 #define PARTICLE_NUM 5
-#define STICK_NUM 6
+#define STICK_NUM 11
 #define GRAVITY 200.81f
 #define DAMPING_FACTOR .999f
 

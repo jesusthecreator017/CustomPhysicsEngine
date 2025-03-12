@@ -214,12 +214,29 @@ void CreateParticleNetwork(Engine* engine) {
     );
     
     // Initialize sticks
-    InitStick(&engine->sticks[0], &engine->particles[0], &engine->particles[1], Vector2Distance(engine->particles[0].position, engine->particles[1].position), Vector2Distance(engine->particles[0].position, engine->particles[1].position) - 10.0f);
-    InitStick(&engine->sticks[1], &engine->particles[1], &engine->particles[2], Vector2Distance(engine->particles[1].position, engine->particles[2].position), Vector2Distance(engine->particles[1].position, engine->particles[2].position) - 10.0f);
-    InitStick(&engine->sticks[2], &engine->particles[2], &engine->particles[3], Vector2Distance(engine->particles[2].position, engine->particles[3].position), Vector2Distance(engine->particles[2].position, engine->particles[3].position) - 10.0f);
-    InitStick(&engine->sticks[5], &engine->particles[4], &engine->particles[2], Vector2Distance(engine->particles[4].position, engine->particles[2].position), Vector2Distance(engine->particles[4].position, engine->particles[2].position) - 10.0f);
-    InitStick(&engine->sticks[3], &engine->particles[3], &engine->particles[0], Vector2Distance(engine->particles[3].position, engine->particles[0].position), Vector2Distance(engine->particles[3].position, engine->particles[0].position) - 10.0f);
-    InitStick(&engine->sticks[4], &engine->particles[0], &engine->particles[2], Vector2Distance(engine->particles[0].position, engine->particles[2].position), Vector2Distance(engine->particles[0].position, engine->particles[2].position) / 2);
+    InitStick(&engine->sticks[0], &engine->particles[0], &engine->particles[1], 
+              Vector2Distance(engine->particles[0].position, engine->particles[1].position), 
+              Vector2Distance(engine->particles[0].position, engine->particles[1].position) - 10.0f);
+
+    InitStick(&engine->sticks[1], &engine->particles[1], &engine->particles[2], 
+              Vector2Distance(engine->particles[1].position, engine->particles[2].position), 
+              Vector2Distance(engine->particles[1].position, engine->particles[2].position) - 10.0f);
+
+    InitStick(&engine->sticks[2], &engine->particles[2], &engine->particles[3], 
+              Vector2Distance(engine->particles[2].position, engine->particles[3].position), 
+              Vector2Distance(engine->particles[2].position, engine->particles[3].position) - 10.0f);
+
+    InitStick(&engine->sticks[3], &engine->particles[3], &engine->particles[4], 
+              Vector2Distance(engine->particles[3].position, engine->particles[4].position), 
+              Vector2Distance(engine->particles[3].position, engine->particles[4].position) - 10.0f);
+
+    InitStick(&engine->sticks[4], &engine->particles[4], &engine->particles[5], 
+              Vector2Distance(engine->particles[4].position, engine->particles[5].position), 
+              Vector2Distance(engine->particles[4].position, engine->particles[5].position) / 2);
+
+    InitStick(&engine->sticks[5], &engine->particles[5], &engine->particles[5], 
+              Vector2Distance(engine->particles[5].position, engine->particles[5].position), 
+              Vector2Distance(engine->particles[5].position, engine->particles[5].position) - 10.0f);
 }
 
 void SwitchScene(Engine* engine, SceneType newScene){
@@ -251,12 +268,12 @@ void InitScene(Engine* engine, SceneType scene) {
             break;
             
         case SCENE_PARTICLES:
-            engine->particleCount = 200;
+            engine->particleCount = 30;
             engine->stickCount = 0; // No sticks needed
             break;
 
         case SCENE_SOCCER:
-            engine->particleCount = 1; 
+            engine->particleCount = 2; 
             engine->stickCount = 0; 
             break;
             
@@ -293,23 +310,37 @@ void InitScene(Engine* engine, SceneType scene) {
             break;
         case SCENE_PENDULUM:
             // Initialize pendulum setup
-            InitParticle(&engine->particles[0], (Vector2){GetScreenWidth()/2, 100}, 
+            InitParticle(&engine->particles[0], 
+            (Vector2){GetScreenWidth()/2, 100}, 
             BLUE, 
             50, 
             0.5f, 
-            10.0f, 
+            15.0f, 
             true);
             
             for (int i = 1; i <= 5; i++) {
                 InitParticle(&engine->particles[i], 
                 (Vector2){GetScreenWidth()/2, 100 + i * 60},
                 (Color){GetRandomValue(50, 255), GetRandomValue(50, 255), GetRandomValue(50, 255), 255},
-                30,
+                1,
                 0.5f, 
-                10.0f, 
+                0.000001f, 
                 false);
 
                 InitStick(&engine->sticks[i-1], &engine->particles[i-1], &engine->particles[i], 60.0f, 60.0f);
+
+                if (i == 5){
+                    InitParticle(&engine->particles[i], 
+                    (Vector2){GetScreenWidth()/2, 100 + i * 60},
+                    (Color){GetRandomValue(50, 255), GetRandomValue(50, 255), GetRandomValue(50, 255), 255},
+                    50,
+                    0.5f, 
+                    25.0f, 
+                    false);
+
+                InitStick(&engine->sticks[i-1], &engine->particles[i-1], &engine->particles[i], 60.0f, 60.0f);
+                    
+                }
             }
             break;
         case SCENE_CLOTH:
@@ -368,6 +399,14 @@ void InitScene(Engine* engine, SceneType scene) {
                                 0.5f, 
                                 35.0f, 
                                 false);
+
+            InitParticle(&engine->particles[1], 
+                                (Vector2){GetRandomValue(100, GetScreenWidth()-100), GetRandomValue(100, GetScreenHeight()-100)}, 
+                                (Color){64, 0, 64, 255}, 
+                                50, 
+                                0.5f, 
+                                35.0f, 
+                                false);
             break;
 
         default:
@@ -402,13 +441,13 @@ void RenderScene(Engine* engine) {
     // Add scene-specific UI elements
     switch(engine->currentScene) {
         case SCENE_MENU:
-            DrawText("New in Version 0.11:", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 300, 30, BLUE);
-            DrawText("- Engine code simplified, Added support for scenes", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 250, 20, BLUE);
-            DrawText("- New 'Soccer Game' scene!", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 200, 20, BLUE);
+            DrawText("New in Version 0.12:", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 300, 30, BLUE);
+            DrawText("- Movement indicators added!", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 250, 20, BLUE);
+            DrawText("- Collisons adjusted, Changes to Pendulum scene ", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 200, 20, BLUE);
 
             DrawText("Welcome to our Custom Physics Engine!", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 100, 30, BLUE);
             DrawText("Created by Jesus, Chase, Alvaro.", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 50, 25, BLUE);
-            DrawText("Version 0.11 - 03/10", GetScreenWidth()/2 - 300, GetScreenHeight()/2, 25, BLUE);
+            DrawText("Version 0.12 - 03/11", GetScreenWidth()/2 - 300, GetScreenHeight()/2, 25, BLUE);
             
             DrawText("List of Current Modes: ", GetScreenWidth()/2 - 300, GetScreenHeight()/2 + 65, 25, BLUE);
             DrawText("[a] - Pendulum Simulation", GetScreenWidth()/2 - 300, GetScreenHeight()/2 + 100, 25, BLUE);
@@ -420,6 +459,8 @@ void RenderScene(Engine* engine) {
         
         case SCENE_PENDULUM:
             DrawText("Pendulum Simulation", 10, 110, 20, DARKBLUE);
+            DrawText("- Changed balls to 0.0001f size", 10, 135, 20, DARKBLUE);
+            DrawText("- Allows for movement to be seen", 10, 160, 20, DARKBLUE);
 
             DrawText("[a] Restart scene", 20, GetScreenHeight() - 70, 20, BLUE);
             DrawText("[z] Return to Menu", 20, GetScreenHeight() - 40, 20, BLUE);
@@ -427,6 +468,7 @@ void RenderScene(Engine* engine) {
             
         case SCENE_CLOTH:
             DrawText("Cloth Simulation", 10, 110, 20, DARKBLUE);
+            DrawText("- Creating a mutable shape", 10, 135, 20, DARKBLUE);
 
             DrawText("[s] Restart scene", 20, GetScreenHeight() - 70, 20, BLUE);
             DrawText("[z] Return to Menu", 20, GetScreenHeight() - 40, 20, BLUE);
@@ -434,6 +476,7 @@ void RenderScene(Engine* engine) {
             
         case SCENE_PARTICLES:
             DrawText("Particle System", 10, 110, 20, DARKBLUE);
+            DrawText("# of Particles: 30",10, 135, 20, DARKBLUE);
 
             DrawText("[d] Restart scene", 20, GetScreenHeight() - 70, 20, BLUE);
             DrawText("[z] Return to Menu", 20, GetScreenHeight() - 40, 20, BLUE);
@@ -441,9 +484,11 @@ void RenderScene(Engine* engine) {
     
         case SCENE_SOCCER:
             DrawText("Soccer Game", 10, 110, 20, DARKBLUE);
+            DrawText("- Testing collisons", 10, 135, 20, DARKBLUE);
 
             DrawText("[f] Restart scene", 20, GetScreenHeight() - 70, 20, BLUE);
             DrawText("[z] Return to Menu", 20, GetScreenHeight() - 40, 20, BLUE);
+            DrawText("________________________________________________________________", 10, GetScreenHeight() - 40, 50, GREEN);
             break;
 
         default:
