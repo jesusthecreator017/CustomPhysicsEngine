@@ -26,10 +26,31 @@ void Update(Particle* p, float dt){
             // Recalculate position based on clamped velocity
             p->position = Vector2Add(p->oldPosition, newVelocity);
         }
+        
+        // Apply a very mild global damping (just enough to stop perpetual motion)
+        // MUCH more subtle than before
+        float globalDamping = 0.998f;  // Very subtle damping (closer to 1.0 = less damping)
+        
+        // Only apply damping to particles that are near the bottom of the screen
+        // This allows normal movement elsewhere
+        if(p->position.y > GetScreenHeight() - 100) {  // Only bottom 100 pixels
+            // Apply stronger damping for particles at rest on the ground
+            if(currentSpeed < 0.2f && p->position.y > GetScreenHeight() - p->radius - 2) {
+                globalDamping = 0.95f; // Stronger damping for nearly-stopped particles
+                
+                // If extremely slow and touching the bottom, just stop it
+                if(currentSpeed < 0.05f) {
+                    p->oldPosition = p->position;
+                }
+            }
+            
+            Vector2 dampedVelocity = Vector2Scale(newVelocity, globalDamping);
+            p->position = Vector2Add(p->oldPosition, dampedVelocity);
+        }
 
         // Updating debug data
         p->info.position = p->position;
-        p->info.velocity = newVelocity; // Updated velocity after clamping
+        p->info.velocity = Vector2Subtract(p->position, p->oldPosition);
         p->info.color = p->color;
     }
 }
@@ -136,7 +157,25 @@ void ResolveCollision(Particle* p1, Particle* p2) {
     
     // Only apply impulse if objects are moving toward each other
     if (relVelDot < 0) {
+        // Add collision damping - this is key for pile stabilization
         float combinedRestitution = (p1->restitution + p2->restitution) * 0.5f;
+        
+        // Apply extra damping for particles near the bottom of the screen
+        // to help them settle in piles
+        if (p1->position.y > GetScreenHeight() - 100 || 
+            p2->position.y > GetScreenHeight() - 100) {
+            // Reduce restitution for particles at the bottom
+            combinedRestitution *= 0.7f;
+        }
+        
+        // Apply extra damping for slow-moving collisions
+        float relSpeed = fabsf(relVelDot);
+        if (relSpeed < 0.5f) {
+            // Use progressively stronger damping for slower collisions
+            float slowDampingFactor = 0.5f + (0.5f * relSpeed / 0.5f);
+            combinedRestitution *= slowDampingFactor;
+        }
+        
         float impulse = relVelDot * combinedRestitution;
         
         // Apply impulse
@@ -148,6 +187,39 @@ void ResolveCollision(Particle* p1, Particle* p2) {
         if (!p2->isPinned) {
             p2->oldPosition = Vector2Subtract(p2->oldPosition, 
                               Vector2Scale(normal, impulse * p2MoveRatio));
+        }
+        
+        // Add friction for stacking stability
+        // Calculate tangent vector perpendicular to normal
+        Vector2 tangent = {-normal.y, normal.x};  // Perpendicular to normal
+        
+        // Project velocities onto tangent
+        float v1Tangent = Vector2DotProduct(v1, tangent);
+        float v2Tangent = Vector2DotProduct(v2, tangent);
+        
+        // Calculate relative tangential velocity
+        float relTangentVel = v2Tangent - v1Tangent;
+        
+        // Apply friction impulse
+        float frictionCoef = 0.1f;  // Friction coefficient
+        
+        // More friction near the bottom of the screen
+        if (p1->position.y > GetScreenHeight() - 100 || 
+            p2->position.y > GetScreenHeight() - 100) {
+            frictionCoef = 0.4f;  // Stronger friction for particles in piles
+        }
+        
+        float frictionImpulse = -relTangentVel * frictionCoef;
+        
+        // Apply friction impulse to change tangential velocity
+        if (!p1->isPinned) {
+            p1->oldPosition = Vector2Add(p1->oldPosition, 
+                             Vector2Scale(tangent, frictionImpulse * p1MoveRatio));
+        }
+        
+        if (!p2->isPinned) {
+            p2->oldPosition = Vector2Subtract(p2->oldPosition, 
+                             Vector2Scale(tangent, frictionImpulse * p2MoveRatio));
         }
     }
 }
