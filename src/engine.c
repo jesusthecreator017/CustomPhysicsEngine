@@ -444,6 +444,7 @@ void RenderScene(Engine* engine) {
             DrawText("New in Version 0.12:", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 300, 30, BLUE);
             DrawText("- Movement indicators added!", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 250, 20, BLUE);
             DrawText("- Collisons adjusted, Changes to Pendulum scene ", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 200, 20, BLUE);
+            
 
             DrawText("Welcome to our Custom Physics Engine!", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 100, 30, BLUE);
             DrawText("Created by Jesus, Chase, Alvaro.", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 50, 25, BLUE);
