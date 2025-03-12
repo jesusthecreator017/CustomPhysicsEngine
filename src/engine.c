@@ -144,6 +144,12 @@ void EngineHandleInput(Engine* engine) {
     else if (IsKeyPressed(KEY_F)) {
         SwitchScene(engine, SCENE_SOCCER);
     }
+    else if (IsKeyPressed(KEY_Q)) {
+        SwitchScene(engine, SCENE_PATCHNOTES);
+    }
+    else if (IsKeyPressed(KEY_G)) {
+        SwitchScene(engine, SCENE_CRADLE);
+    }
     else if (IsKeyPressed(KEY_Z)) {
         SwitchScene(engine, SCENE_MENU);
     }
@@ -276,9 +282,19 @@ void InitScene(Engine* engine, SceneType scene) {
             engine->particleCount = 2; 
             engine->stickCount = 0; 
             break;
+
+        case SCENE_PATCHNOTES:
+            engine->particleCount = 0; 
+            engine->stickCount = 0; 
+            break;
+
+        case SCENE_CRADLE:
+            engine->particleCount = 6; 
+            engine->stickCount = 5; 
+            break;
             
         default:
-            engine->particleCount = 5;  // Default to network
+            engine->particleCount = 3;  // Default to network
             engine->stickCount = 6;
             break;
     }
@@ -298,7 +314,7 @@ void InitScene(Engine* engine, SceneType scene) {
         engine->sticks = (Stick*)malloc(sizeof(Stick) * engine->stickCount);
     } else {
         engine->sticks = NULL;
-    }
+    } 
     
     // Ensure active state is correctly set
     engine->isActive = (scene != SCENE_MENU);
@@ -409,6 +425,53 @@ void InitScene(Engine* engine, SceneType scene) {
                                 false);
             break;
 
+        case SCENE_CRADLE:
+            InitParticle(&engine->particles[0], 
+            (Vector2){GetScreenWidth()/2, 100}, 
+            BLUE, 
+            50, 
+            0.5f, 
+            15.0f, 
+            true);
+            
+            for (int i = 1; i <= 5; i++) {
+                InitParticle(&engine->particles[i], 
+                (Vector2){GetScreenWidth()/2 + i * 60, 100},
+                (Color){GetRandomValue(50, 255), 
+                GetRandomValue(50, 255), 
+                GetRandomValue(50, 255), 255},
+                1,
+                0.5f, 
+                0.000001f, 
+                false);
+
+                InitStick(&engine->sticks[i-1], 
+                          &engine->particles[i-1], 
+                          &engine->particles[i], 
+                          60.0f, 
+                          60.0f);
+
+                if (i == 5){
+                    InitParticle(&engine->particles[i], 
+                    (Vector2){GetScreenWidth()/2 + 400, 100},
+                    (Color){GetRandomValue(50, 255), 
+                    GetRandomValue(50, 255), 
+                    GetRandomValue(50, 255), 255},
+                    50,
+                    0.5f, 
+                    25.0f, 
+                    false);
+
+                InitStick(&engine->sticks[i-1], &engine->particles[i-1], &engine->particles[i], 60.0f, 60.0f);
+                    
+                }
+            }
+
+            break;
+
+        case SCENE_PATCHNOTES:
+            break;
+
         default:
             CreateParticleNetwork(engine);
             break;
@@ -441,22 +504,18 @@ void RenderScene(Engine* engine) {
     // Add scene-specific UI elements
     switch(engine->currentScene) {
         case SCENE_MENU:
-            DrawText("New in Version 0.12:", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 300, 30, BLUE);
-            DrawText("- Movement indicators added!", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 250, 20, BLUE);
-            DrawText("- Collisons adjusted, Changes to Pendulum scene ", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 200, 20, BLUE);
+            DrawText("Welcome to our Custom Physics Engine!", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 300, 30, BLUE);
+            DrawText("Created by Jesus, Chase, Alvaro.", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 250, 25, BLUE);
+            DrawText("Version 0.13 - 03/12", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 200, 25, BLUE);
             
-
-            DrawText("Welcome to our Custom Physics Engine!", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 100, 30, BLUE);
-            DrawText("Created by Jesus, Chase, Alvaro.", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 50, 25, BLUE);
-            DrawText("Version 0.12 - 03/11", GetScreenWidth()/2 - 300, GetScreenHeight()/2, 25, BLUE);
-            
-            DrawText("List of Current Modes: ", GetScreenWidth()/2 - 300, GetScreenHeight()/2 + 65, 25, BLUE);
-            DrawText("[a] - Pendulum Simulation", GetScreenWidth()/2 - 300, GetScreenHeight()/2 + 100, 25, BLUE);
-            DrawText("[s] - Cloth Simulation", GetScreenWidth()/2 - 300, GetScreenHeight()/2 + 150, 25, BLUE);
-            DrawText("[d] - Particle System", GetScreenWidth()/2 - 300, GetScreenHeight()/2 + 200, 25, BLUE);
-            DrawText("[f] - Soccer Game", GetScreenWidth()/2 - 300, GetScreenHeight()/2 + 250, 25, BLUE);
+            DrawText("List of Current Modes: ", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 100, 25, BLUE);
+            DrawText("[a] - Pendulum Simulation", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 50, 25, BLUE);
+            DrawText("[s] - Cloth Simulation", GetScreenWidth()/2 - 300, GetScreenHeight()/2, 25, BLUE);
+            DrawText("[d] - Particle System", GetScreenWidth()/2 - 300, GetScreenHeight()/2 + 50, 25, BLUE);
+            DrawText("[f] - Soccer Game", GetScreenWidth()/2 - 300, GetScreenHeight()/2 + 100, 25, BLUE);
+            DrawText("[g] - Newton Cradle Simulation", GetScreenWidth()/2 - 300, GetScreenHeight()/2 + 150, 25, BLUE);
+            DrawText("Press [q] for current patch notes", GetScreenWidth()/2 - 300, GetScreenHeight()/2 + 300, 25, BLUE);
             break;
-        
         
         case SCENE_PENDULUM:
             DrawText("Pendulum Simulation", 10, 110, 20, DARKBLUE);
@@ -492,8 +551,24 @@ void RenderScene(Engine* engine) {
             DrawText("________________________________________________________________", 10, GetScreenHeight() - 40, 50, GREEN);
             break;
 
-        default:
+        case SCENE_CRADLE:
+            DrawText("Newton's Cradle", 10, 110, 20, DARKBLUE);
+            DrawText("- Observe the forces of 2 particles ", 10, 135, 20, DARKBLUE);
+
+            DrawText("[g] Restart scene", 20, GetScreenHeight() - 70, 20, BLUE);
             DrawText("[z] Return to Menu", 20, GetScreenHeight() - 40, 20, BLUE);
+            break;
+
+        case SCENE_PATCHNOTES:
+            DrawText("New in Version 0.13:", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 300, 30, BLUE);
+            DrawText("- Newton's Cradle Scene added!", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 250, 20, BLUE);
+            DrawText("- However, Newton's Cradle Scene is currently WIP", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 200, 20, BLUE);
+            DrawText("- Main menu rearranged to be cleaner", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 150, 20, BLUE);
+            DrawText("- New scene dedicated for patch notes ", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 100, 20, BLUE);
+            break;   
+
+        default:
+            DrawText("[z] Return to Menu", 20, GetScreenHeight() - 40, 20, BLUE);  
             break;
     }
  }

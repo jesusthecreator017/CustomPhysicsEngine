@@ -13,9 +13,9 @@ int main(void) {
     
     // Main Game Loop
     while (!WindowShouldClose()) {
-        float dt = GetFrameTime();
+        float dt = GetFrameTime(); 
         
-        // Handle user input
+        // Handle user input 
         engine.HandleInput(&engine);
         
         // Update physics (only if a scene is active)
