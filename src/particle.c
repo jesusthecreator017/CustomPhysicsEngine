@@ -26,27 +26,6 @@ void Update(Particle* p, float dt){
             // Recalculate position based on clamped velocity
             p->position = Vector2Add(p->oldPosition, newVelocity);
         }
-        
-        // Apply a very mild global damping (just enough to stop perpetual motion)
-        // MUCH more subtle than before
-        float globalDamping = 0.998f;  // Very subtle damping (closer to 1.0 = less damping)
-        
-        // Only apply damping to particles that are near the bottom of the screen
-        // This allows normal movement elsewhere
-        if(p->position.y > GetScreenHeight() - 100) {  // Only bottom 100 pixels
-            // Apply stronger damping for particles at rest on the ground
-            if(currentSpeed < 0.2f && p->position.y > GetScreenHeight() - p->radius - 2) {
-                globalDamping = 0.95f; // Stronger damping for nearly-stopped particles
-                
-                // If extremely slow and touching the bottom, just stop it
-                if(currentSpeed < 0.05f) {
-                    p->oldPosition = p->position;
-                }
-            }
-            
-            Vector2 dampedVelocity = Vector2Scale(newVelocity, globalDamping);
-            p->position = Vector2Add(p->oldPosition, dampedVelocity);
-        }
 
         // Updating debug data
         p->info.position = p->position;
@@ -106,123 +85,61 @@ void ConstrainParticle(Particle* p){
 
 // Calculates the physics needed for the collison within the particles
 void ResolveCollision(Particle* p1, Particle* p2) {
-    // Calculate distance vector
-    Vector2 delta = Vector2Subtract(p2->position, p1->position);
-    float dist = Vector2Length(delta);
-    
-    // Early exit for identical positions
-    if (dist < 0.0001f) {
-        // Slight random jitter to separate overlapping particles
+    Vector2 collision_axis = Vector2Subtract(p2->position, p1->position);
+    float dist = Vector2Length(collision_axis);
+
+    if (dist >= 100.0f) return; // No collision
+
+    if (dist < 0.0001f) { // Prevent division by zero
         p2->position.x += 0.01f * (float)GetRandomValue(-10, 10);
         p2->position.y += 0.01f * (float)GetRandomValue(-10, 10);
         return;
     }
-    
-    // Precompute collision normal
-    Vector2 normal = Vector2Scale(delta, 1.0f/dist);
-    
-    // Calculate penetration and mass ratios only once
-    float penetration = (p1->radius + p2->radius) - dist;
-    float p1MoveRatio, p2MoveRatio;
-    
-    if (p1->isPinned) {
-        p1MoveRatio = 0.0f;
-        p2MoveRatio = 1.0f;
-    } else if (p2->isPinned) {
-        p1MoveRatio = 1.0f;
-        p2MoveRatio = 0.0f;
-    } else {
-        float totalMass = p1->mass + p2->mass;
-        p1MoveRatio = p2->mass / totalMass;
-        p2MoveRatio = p1->mass / totalMass;
-    }
-    
-    // Apply position correction
+
+    Vector2 n = Vector2Scale(collision_axis, 1.0f / dist);
+    float delta = 100.0f - dist;
+
+    // Reduce position correction intensity
+    float correctionFactor = 0.2f; // Reduce this value to lessen reaction force
+
     if (!p1->isPinned) {
-        p1->position = Vector2Subtract(p1->position, 
-                         Vector2Scale(normal, penetration * p1MoveRatio));
+        p1->position = Vector2Add(p1->position, Vector2Scale(n, correctionFactor * delta));
     }
-    
+
     if (!p2->isPinned) {
-        p2->position = Vector2Add(p2->position, 
-                       Vector2Scale(normal, penetration * p2MoveRatio));
+        p2->position = Vector2Subtract(p2->position, Vector2Scale(n, correctionFactor * delta));
     }
-    
-    // Calculate velocities once
+
+    // Velocity-based impulse resolution
     Vector2 v1 = Vector2Subtract(p1->position, p1->oldPosition);
     Vector2 v2 = Vector2Subtract(p2->position, p2->oldPosition);
-    
-    // Calculate relative velocity
-    float relVelDot = Vector2DotProduct(Vector2Subtract(v2, v1), normal);
-    
-    // Only apply impulse if objects are moving toward each other
-    if (relVelDot < 0) {
-        // Add collision damping - this is key for pile stabilization
-        float combinedRestitution = (p1->restitution + p2->restitution) * 0.5f;
-        
-        // Apply extra damping for particles near the bottom of the screen
-        // to help them settle in piles
-        if (p1->position.y > GetScreenHeight() - 100 || 
-            p2->position.y > GetScreenHeight() - 100) {
-            // Reduce restitution for particles at the bottom
-            combinedRestitution *= 0.7f;
-        }
-        
-        // Apply extra damping for slow-moving collisions
-        float relSpeed = fabsf(relVelDot);
-        if (relSpeed < 0.5f) {
-            // Use progressively stronger damping for slower collisions
-            float slowDampingFactor = 0.5f + (0.5f * relSpeed / 0.5f);
-            combinedRestitution *= slowDampingFactor;
-        }
-        
-        float impulse = relVelDot * combinedRestitution;
-        
-        // Apply impulse
-        if (!p1->isPinned) {
-            p1->oldPosition = Vector2Add(p1->oldPosition, 
-                              Vector2Scale(normal, impulse * p1MoveRatio));
-        }
-        
-        if (!p2->isPinned) {
-            p2->oldPosition = Vector2Subtract(p2->oldPosition, 
-                              Vector2Scale(normal, impulse * p2MoveRatio));
-        }
-        
-        // Add friction for stacking stability
-        // Calculate tangent vector perpendicular to normal
-        Vector2 tangent = {-normal.y, normal.x};  // Perpendicular to normal
-        
-        // Project velocities onto tangent
-        float v1Tangent = Vector2DotProduct(v1, tangent);
-        float v2Tangent = Vector2DotProduct(v2, tangent);
-        
-        // Calculate relative tangential velocity
-        float relTangentVel = v2Tangent - v1Tangent;
-        
-        // Apply friction impulse
-        float frictionCoef = 0.1f;  // Friction coefficient
-        
-        // More friction near the bottom of the screen
-        if (p1->position.y > GetScreenHeight() - 100 || 
-            p2->position.y > GetScreenHeight() - 100) {
-            frictionCoef = 0.4f;  // Stronger friction for particles in piles
-        }
-        
-        float frictionImpulse = -relTangentVel * frictionCoef;
-        
-        // Apply friction impulse to change tangential velocity
-        if (!p1->isPinned) {
-            p1->oldPosition = Vector2Add(p1->oldPosition, 
-                             Vector2Scale(tangent, frictionImpulse * p1MoveRatio));
-        }
-        
-        if (!p2->isPinned) {
-            p2->oldPosition = Vector2Subtract(p2->oldPosition, 
-                             Vector2Scale(tangent, frictionImpulse * p2MoveRatio));
-        }
+    Vector2 relativeVelocity = Vector2Subtract(v2, v1);
+
+    float elasticity = 0.3f; // Reduce to prevent bouncing
+
+    // Impulse calculation
+    float impulseMagnitude = Vector2DotProduct(relativeVelocity, n) * -(1 + elasticity);
+    impulseMagnitude *= 0.5f; // Each particle gets half of the impulse
+
+    if (!p1->isPinned) {
+        p1->oldPosition = Vector2Subtract(p1->oldPosition, Vector2Scale(n, impulseMagnitude));
+    }
+
+    if (!p2->isPinned) {
+        p2->oldPosition = Vector2Add(p2->oldPosition, Vector2Scale(n, impulseMagnitude));
+    }
+
+    // Apply stronger damping
+    float dampingFactor = 0.95f; // Adjusted from 0.99
+    if (!p1->isPinned) {
+        p1->oldPosition = Vector2Subtract(p1->position, Vector2Scale(v1, dampingFactor));
+    }
+
+    if (!p2->isPinned) {
+        p2->oldPosition = Vector2Subtract(p2->position, Vector2Scale(v2, dampingFactor));
     }
 }
+
 
 // Checks for when a particle is within another particle 
 bool ParticleVsParticle(Particle* a, Particle* b) {
