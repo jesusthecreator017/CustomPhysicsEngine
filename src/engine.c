@@ -506,7 +506,7 @@ void RenderScene(Engine* engine) {
         case SCENE_MENU:
             DrawText("Welcome to our Custom Physics Engine!", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 300, 30, BLUE);
             DrawText("Created by Jesus, Chase, Alvaro.", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 250, 25, BLUE);
-            DrawText("Version 0.13 - 03/12", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 200, 25, BLUE);
+            DrawText("Version 0.13B - 03/13", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 200, 25, BLUE);
             
             DrawText("List of Current Modes: ", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 100, 25, BLUE);
             DrawText("[a] - Pendulum Simulation", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 50, 25, BLUE);
@@ -560,11 +560,11 @@ void RenderScene(Engine* engine) {
             break;
 
         case SCENE_PATCHNOTES:
-            DrawText("New in Version 0.13:", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 300, 30, BLUE);
-            DrawText("- Newton's Cradle Scene added!", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 250, 20, BLUE);
-            DrawText("- However, Newton's Cradle Scene is currently WIP", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 200, 20, BLUE);
-            DrawText("- Main menu rearranged to be cleaner", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 150, 20, BLUE);
-            DrawText("- New scene dedicated for patch notes ", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 100, 20, BLUE);
+            DrawText("New in Version 0.13B:", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 300, 30, BLUE);
+            DrawText("- Physics was altered", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 250, 20, BLUE);
+            DrawText(" ", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 200, 20, BLUE);
+            DrawText(" ", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 150, 20, BLUE);
+            DrawText(" ", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 100, 20, BLUE);
             break;   
 
         default:
