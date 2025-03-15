@@ -104,68 +104,23 @@ void UpdatePhysics(Engine* engine, float dt) {
     }
 }
 
-// Render all objects
-void EngineRender(Engine* engine) {
-    if (!engine->isActive) return;
-    
-    // Render sticks first (behind particles)
-    for (int i = 0; i < engine->stickCount; i++) {
-        engine->sticks[i].Render(&engine->sticks[i]);
+// Function to update a specific scene
+void UpdateScene(Engine* engine, float dt) {
+    //Most scenes should use the general physics
+    if (engine->isActive) {
+        UpdatePhysics(engine, dt);
     }
-    
-    // Render particles
-    for (int i = 0; i < engine->particleCount; i++) {
-        engine->particles[i].Render(&engine->particles[i]);
-    }
-    
-    // Debug rendering
-    if (engine->mouseGrabCondition == 1) {
-        for (int i = 0; i < engine->particleCount; i++) {
-            if (engine->particles[i].isGrabbed) {
-                ObjectInfo(engine->particles[i].info, engine->particles[i].type);
-                break;
-            }
-        }
+
+    // Scene-specific updates could be added here
+    switch(engine->currentScene) {
+        case SCENE_MENU:
+            // Menu doesn't need physics updates
+            break;
+        default:
+            break;
     }
 }
 
-// Handle user input
-void EngineHandleInput(Engine* engine) {
-    // Scene switching controls
-    if (IsKeyPressed(KEY_A)) {
-        SwitchScene(engine, SCENE_PENDULUM);
-    }
-    else if (IsKeyPressed(KEY_S)) {
-        SwitchScene(engine, SCENE_CLOTH);
-    }
-    else if (IsKeyPressed(KEY_D)) {
-        SwitchScene(engine, SCENE_PARTICLES);
-    }
-    else if (IsKeyPressed(KEY_F)) {
-        SwitchScene(engine, SCENE_SOCCER);
-    }
-    else if (IsKeyPressed(KEY_Q)) {
-        SwitchScene(engine, SCENE_PATCHNOTES);
-    }
-    else if (IsKeyPressed(KEY_G)) {
-        SwitchScene(engine, SCENE_CRADLE);
-    }
-    else if (IsKeyPressed(KEY_Z)) {
-        SwitchScene(engine, SCENE_MENU);
-    }
-    
-    
-    // Handle mouse interactions
-    if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
-        PickUpParticle(engine->particles, &engine->mouseGrabCondition);
-    } else {
-        // Reset grab condition
-        engine->mouseGrabCondition = 0;
-        for (int i = 0; i < engine->particleCount; i++) {
-            engine->particles[i].isGrabbed = 0;
-        }
-    }
-}
 // Create initial network of particles
 void CreateParticleNetwork(Engine* engine) {
     // Initialize particles with your standard setup
@@ -243,6 +198,69 @@ void CreateParticleNetwork(Engine* engine) {
     InitStick(&engine->sticks[5], &engine->particles[5], &engine->particles[5], 
               Vector2Distance(engine->particles[5].position, engine->particles[5].position), 
               Vector2Distance(engine->particles[5].position, engine->particles[5].position) - 10.0f);
+}
+
+// Render all objects
+void EngineRender(Engine* engine) {
+    if (!engine->isActive) return;
+    
+    // Render sticks first (behind particles)
+    for (int i = 0; i < engine->stickCount; i++) {
+        engine->sticks[i].Render(&engine->sticks[i]);
+    }
+    
+    // Render particles
+    for (int i = 0; i < engine->particleCount; i++) {
+        engine->particles[i].Render(&engine->particles[i]);
+    }
+    
+    // Debug rendering
+    if (engine->mouseGrabCondition == 1) {
+        for (int i = 0; i < engine->particleCount; i++) {
+            if (engine->particles[i].isGrabbed) {
+                ObjectInfo(engine->particles[i].info, engine->particles[i].type);
+                break;
+            }
+        }
+    }
+}
+
+// Handle user input
+void EngineHandleInput(Engine* engine) {
+    // Scene switching controls
+    if (IsKeyPressed(KEY_A)) {
+        SwitchScene(engine, SCENE_PENDULUM);
+    }
+    else if (IsKeyPressed(KEY_S)) {
+        SwitchScene(engine, SCENE_CLOTH);
+    }
+    else if (IsKeyPressed(KEY_D)) {
+        SwitchScene(engine, SCENE_PARTICLES);
+    }
+    else if (IsKeyPressed(KEY_F)) {
+        SwitchScene(engine, SCENE_SOCCER);
+    }
+    else if (IsKeyPressed(KEY_Q)) {
+        SwitchScene(engine, SCENE_PATCHNOTES);
+    }
+    else if (IsKeyPressed(KEY_G)) {
+        SwitchScene(engine, SCENE_CRADLE);
+    }
+    else if (IsKeyPressed(KEY_Z)) {
+        SwitchScene(engine, SCENE_MENU);
+    }
+    
+    
+    // Handle mouse interactions
+    if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+        PickUpParticle(engine->particles, &engine->mouseGrabCondition);
+    } else {
+        // Reset grab condition
+        engine->mouseGrabCondition = 0;
+        for (int i = 0; i < engine->particleCount; i++) {
+            engine->particles[i].isGrabbed = 0;
+        }
+    }
 }
 
 void SwitchScene(Engine* engine, SceneType newScene){
@@ -478,24 +496,6 @@ void InitScene(Engine* engine, SceneType scene) {
     }
 }
 
-
-// Function to update a specific scene
-void UpdateScene(Engine* engine, float dt) {
-    //Most scenes should use the general physics
-    if (engine->isActive) {
-        UpdatePhysics(engine, dt);
-    }
-
-    // Scene-specific updates could be added here
-    switch(engine->currentScene) {
-        case SCENE_MENU:
-            // Menu doesn't need physics updates
-            break;
-        default:
-            break;
-    }
-}
-
 // Function to render a specific scene
 void RenderScene(Engine* engine) {
     // Render all physics objects first
@@ -506,7 +506,7 @@ void RenderScene(Engine* engine) {
         case SCENE_MENU:
             DrawText("Welcome to our Custom Physics Engine!", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 300, 30, BLUE);
             DrawText("Created by Jesus, Chase, Alvaro.", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 250, 25, BLUE);
-            DrawText("Version 0.13B - 03/13", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 200, 25, BLUE);
+            DrawText("Version 0.13C - 03/14", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 200, 25, BLUE);
             
             DrawText("List of Current Modes: ", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 100, 25, BLUE);
             DrawText("[a] - Pendulum Simulation", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 50, 25, BLUE);
@@ -515,6 +515,14 @@ void RenderScene(Engine* engine) {
             DrawText("[f] - Soccer Game", GetScreenWidth()/2 - 300, GetScreenHeight()/2 + 100, 25, BLUE);
             DrawText("[g] - Newton Cradle Simulation", GetScreenWidth()/2 - 300, GetScreenHeight()/2 + 150, 25, BLUE);
             DrawText("Press [q] for current patch notes", GetScreenWidth()/2 - 300, GetScreenHeight()/2 + 300, 25, BLUE);
+            break;
+
+        case SCENE_PATCHNOTES:
+            DrawText("New in Version 0.13C:", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 300, 30, BLUE);
+            DrawText("- Rearranged the order of functions in engine", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 250, 20, BLUE);
+            DrawText(" ", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 200, 20, BLUE);
+            DrawText(" ", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 150, 20, BLUE);
+            DrawText(" ", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 100, 20, BLUE);
             break;
         
         case SCENE_PENDULUM:
@@ -558,14 +566,6 @@ void RenderScene(Engine* engine) {
             DrawText("[g] Restart scene", 20, GetScreenHeight() - 70, 20, BLUE);
             DrawText("[z] Return to Menu", 20, GetScreenHeight() - 40, 20, BLUE);
             break;
-
-        case SCENE_PATCHNOTES:
-            DrawText("New in Version 0.13B:", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 300, 30, BLUE);
-            DrawText("- Physics was altered", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 250, 20, BLUE);
-            DrawText(" ", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 200, 20, BLUE);
-            DrawText(" ", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 150, 20, BLUE);
-            DrawText(" ", GetScreenWidth()/2 - 300, GetScreenHeight()/2 - 100, 20, BLUE);
-            break;   
 
         default:
             DrawText("[z] Return to Menu", 20, GetScreenHeight() - 40, 20, BLUE);  
